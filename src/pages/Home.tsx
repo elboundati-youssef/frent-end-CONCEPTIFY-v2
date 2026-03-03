@@ -1,5 +1,4 @@
-// --- FICHIER: src/pages/Home.tsx ---
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -13,6 +12,14 @@ import ProjectCard from "../components/ProjectCard";
 import BentoCard from "../components/BentoCard";
 import ScrollReveal from "../components/ScrollReveal";
 import { projectsData, servicesData } from "../data";
+import api from "../api/axios"; // Importation de l'API
+
+// --- Helper pour les images ---
+const getImageUrl = (path: string | null | undefined) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `http://localhost:8000/api/private-image/${path}`;
+};
 
 const Hero = () => {
   return (
@@ -62,7 +69,7 @@ const Hero = () => {
           <Magnetic className="relative group inline-block">
             <div className="absolute -inset-1 bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0] rounded-full blur opacity-25 group-hover:opacity-100 transition duration-500 group-hover:duration-200" />
             <a
-              href="#portfolio"
+              href="/portfolio"
               className="relative inline-flex items-center justify-center px-8 py-4 font-medium text-white transition-all duration-300 bg-surface rounded-full hover:bg-surface-hover border border-white/10 hover:border-white/20 overflow-hidden"
             >
               <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-150%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(150%)]">
@@ -154,6 +161,7 @@ const About = () => {
   );
 };
 
+// Section Statique comme demandé
 const DomainesExpertise = () => {
   const [activeService, setActiveService] = useState(0);
   const navigate = useNavigate();
@@ -309,37 +317,42 @@ const DomainesExpertise = () => {
   );
 };
 
+// Section Dynamique (Connectée à la BDD via Portfolios)
 const Expertise = () => {
-  const categories = [
-    {
-      title: "Real Estate",
-      image:
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=1200",
-      desc: "Valorisation de biens et promotion immobilière d'exception. Nous créons des expériences visuelles immersives et des stratégies de marque pour l'immobilier haut de gamme.",
-      className: "md:col-span-2 md:row-span-2",
-    },
-    {
-      title: "Projets Spéciaux",
-      image:
-        "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&q=80&w=1200",
-      desc: "Campagnes sur-mesure et concepts événementiels inédits.",
-      className: "md:col-span-2 md:row-span-1",
-    },
-    {
-      title: "Groupes Scolaires",
-      image:
-        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200",
-      desc: "Communication éducative ciblée et stratégies d'attractivité.",
-      className: "md:col-span-1 md:row-span-1",
-    },
-    {
-      title: "Santé et Bien-être",
-      image:
-        "https://images.unsplash.com/photo-1538108149393-ce90bb2424ad?auto=format&fit=crop&q=80&w=1200",
-      desc: "Marketing médical, image de marque et communication patient.",
-      className: "md:col-span-1 md:row-span-1",
-    },
-  ];
+  const [categories, setCategories] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExpertise = async () => {
+      try {
+        const res = await api.get('/portfolio');
+        const data = res.data?.data || res.data || [];
+        
+        // Formater les données de l'API pour qu'elles correspondent au composant BentoCard
+        const formattedData = data.slice(0, 4).map((item: any, index: number) => {
+          let className = "md:col-span-1 md:row-span-1";
+          if (index === 0) className = "md:col-span-2 md:row-span-2";
+          else if (index === 1) className = "md:col-span-2 md:row-span-1";
+
+          return {
+            id: item.id,
+            title: item.title,
+            image: getImageUrl(item.image),
+            desc: item.description,
+            className: className,
+          };
+        });
+
+        setCategories(formattedData);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des expertises", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchExpertise();
+  }, []);
 
   return (
     <section
@@ -358,27 +371,57 @@ const Expertise = () => {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-[300px]">
-          {categories.map((cat, idx) => (
-            <ScrollReveal key={idx} delay={idx * 0.15} className={cat.className}>
-              <BentoCard
-                title={cat.title}
-                image={cat.image}
-                desc={cat.desc}
-                className="h-full w-full"
-                index={idx}
-              />
-            </ScrollReveal>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="w-8 h-8 border-4 border-[#0dcaf0] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-[300px]">
+            {categories.map((cat, idx) => (
+              <ScrollReveal key={cat.id || idx} delay={idx * 0.15} className={cat.className}>
+                <BentoCard
+                  title={cat.title}
+                  image={cat.image}
+                  desc={cat.desc}
+                  className="h-full w-full"
+                  index={idx}
+                />
+              </ScrollReveal>
+            ))}
+            {categories.length === 0 && (
+                <div className="col-span-full text-center text-gray-500 py-10">
+                    Aucun secteur d'intervention disponible.
+                </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
 };
 
+// Section Dynamique (Connectée à la BDD via Références)
 const PortfolioPreview = () => {
   const navigate = useNavigate();
-  const previewProjects = projectsData.slice(0, 3);
+  const [references, setReferences] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReferences = async () => {
+      try {
+        const res = await api.get('/reference');
+        const data = res.data?.data || res.data || [];
+        // On récupère uniquement les 3 dernières références
+        setReferences(data.slice(0, 3));
+      } catch (error) {
+        console.error("Erreur lors de la récupération des références", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchReferences();
+  }, []);
 
   return (
     <section className="py-16 md:py-32 relative z-10 bg-bg" id="portfolio">
@@ -400,13 +443,34 @@ const PortfolioPreview = () => {
           </div>
         </ScrollReveal>
 
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
-          {previewProjects.map((project, index) => (
-            <ScrollReveal key={project.id} delay={index * 0.15}>
-              <ProjectCard project={project} />
-            </ScrollReveal>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="w-8 h-8 border-4 border-[#6f42c1] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
+           {references.map((ref, index) => (
+  <ScrollReveal key={ref.id} delay={index * 0.15}>
+    <ProjectCard project={{
+      id: ref.id,
+      title: ref.title,
+      // On passe les champs bruts, ProjectCard s'occupera du getImageUrl
+      url: ref.url, 
+      logo: ref.logo,
+      instagram: ref.instagram,
+      website: ref.website,
+      portfolio: ref.portfolio?.title || "Référence",
+      type: ref.url?.endsWith('mp4') ? "video" : "image"
+    } as any} />
+  </ScrollReveal>
+))}
+            {references.length === 0 && (
+                <div className="col-span-full text-center text-gray-500 py-10">
+                    Aucune référence disponible pour le moment.
+                </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -417,10 +481,10 @@ const Home = () => {
     <PageTransition>
       <Hero />
       <InfiniteMarquee />
+      <Expertise />
       <PortfolioPreview />
       <About />
       <DomainesExpertise />
-      <Expertise />
       <ScrollReveal>
         <MarqueeLogos />
       </ScrollReveal>

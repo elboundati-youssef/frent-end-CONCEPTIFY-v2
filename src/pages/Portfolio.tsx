@@ -1,32 +1,54 @@
-// --- FICHIER: src/pages/Portfolio.tsx ---
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AnimatePresence } from "motion/react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import PageTransition from "../components/PageTransition";
 import Magnetic from "../components/Magnetic";
 import ProjectCard from "../components/ProjectCard";
-import { projectsData } from "../data";
+import api from "../api/axios";
 
 const Portfolio = () => {
+  const [references, setReferences] = useState<any[]>([]);
+  const [portfolios, setPortfolios] = useState<any[]>([]);
   const [activeFilter, setActiveFilter] = useState("Tous");
-  const categories = [
-    "Tous",
-    "PROJETS SPÉCIAUX",
-    "REAL ESTATE",
-    "GROUPES SCOLAIRES",
-    "SANTÉ ET BIEN-ÊTRE",
-  ];
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredProjects =
-    activeFilter === "Tous"
-      ? projectsData
-      : projectsData.filter((p) => p.category === activeFilter);
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const [refRes, portRes] = await Promise.all([
+          api.get('/reference'),
+          api.get('/portfolio')
+        ]);
+        
+        // Extraction sécurisée des données
+        setReferences(refRes.data?.data || refRes.data || []);
+        setPortfolios(portRes.data?.data || portRes.data || []);
+      } catch (error) {
+        console.error("Erreur lors du chargement du portfolio", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  // Génération dynamique des catégories à partir de la base de données
+  const categories = ["Tous", ...portfolios.map(p => p.title.toUpperCase())];
+
+  // Filtrage intelligent
+  const filteredProjects = activeFilter === "Tous"
+    ? references
+    : references.filter((ref) => 
+        ref.portfolio?.title?.toUpperCase() === activeFilter || 
+        ref.portfolio_id?.toString() === portfolios.find(p => p.title.toUpperCase() === activeFilter)?.id.toString()
+      );
 
   return (
     <PageTransition className="pt-32 pb-20 min-h-screen container mx-auto px-6">
       <Link
-        to="/#portfolio"
+        to="/"
         className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-12 transition-colors group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />{" "}
@@ -39,7 +61,7 @@ const Portfolio = () => {
         </h1>
         <div className="w-20 h-1 bg-accent mb-12" />
 
-        {/* Filters */}
+        {/* Filters Dynamiques */}
         <div className="flex flex-wrap gap-3">
           {categories.map((cat) => (
             <Magnetic key={cat} className="relative group">
@@ -59,13 +81,25 @@ const Portfolio = () => {
         </div>
       </div>
 
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
-        <AnimatePresence mode="popLayout">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </AnimatePresence>
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center py-20">
+          <div className="w-10 h-10 border-4 border-[#0dcaf0] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((ref) => (
+              <ProjectCard key={ref.id} project={ref} />
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {!isLoading && filteredProjects.length === 0 && (
+        <div className="text-center py-20 text-gray-500">
+          Aucun projet trouvé dans cette catégorie.
+        </div>
+      )}
     </PageTransition>
   );
 };

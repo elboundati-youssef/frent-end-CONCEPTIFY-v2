@@ -1,12 +1,34 @@
-// --- FICHIER: src/components/ProjectCard.tsx ---
 import React from "react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { Instagram, Folder, Globe } from "lucide-react";
-import { Project } from "../data";
 
-const ProjectCard = ({ project }: { project: Project }) => {
+// --- Helper pour lire les images de l'API ---
+const getImageUrl = (path: string | null | undefined) => {
+  if (!path) return "";
+  // Si c'est déjà une URL complète (ex: http://localhost... ou https://unsplash...), on la retourne telle quelle
+  if (path.startsWith("http") || path.startsWith("data:")) return path;
+  // Sinon on ajoute la route de l'API Laravel
+  return `http://localhost:8000/api/private-image/${path}`;
+};
+
+// On utilise "any" pour le type afin d'accepter facilement les données de Laravel
+const ProjectCard = ({ project }: { project: any }) => {
   const navigate = useNavigate();
+
+  // --- Mappage intelligent des données (API vs Statique) ---
+  // On cherche "url" (API), "image" (API transformée) ou "img" (Statique)
+  const bgImage = getImageUrl(project.url || project.image || project.img);
+  
+  // On gère le logo s'il existe
+  const logoImage = project.logo && project.logo !== "" ? getImageUrl(project.logo) : null;
+  
+  // On cherche "title" (API) ou "client" (Statique)
+  const title = project.title || project.client || "Projet Sans Nom";
+  
+  const websiteUrl = project.website;
+  const instagramUrl = project.instagram;
+  const targetId = project.id;
 
   // Animation variants for the action buttons
   const buttonVariants = {
@@ -25,27 +47,29 @@ const ProjectCard = ({ project }: { project: Project }) => {
       className="relative aspect-[4/5] overflow-hidden rounded-xl group break-inside-avoid mb-6 cursor-pointer"
     >
       {/* Background Image with ultra-slow zoom */}
-      <motion.img
-        variants={{
-          hover: { scale: 1.05, transition: { duration: 1.5, ease: "easeOut" } }
-        }}
-        src={project.img}
-        alt={project.client}
-        className="w-full h-full object-cover"
-        referrerPolicy="no-referrer"
-      />
+      {bgImage && (
+        <motion.img
+          variants={{
+            hover: { scale: 1.05, transition: { duration: 1.5, ease: "easeOut" } }
+          }}
+          src={bgImage}
+          alt={title}
+          className="w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+      )}
 
       {/* Dark Overlay - darkens slightly on hover */}
       <motion.div 
         variants={{
           hidden: { backgroundColor: "rgba(0, 0, 0, 0.4)" },
-          hover: { backgroundColor: "rgba(0, 0, 0, 0.6)" }
+          hover: { backgroundColor: "rgba(0, 0, 0, 0.7)" }
         }}
         initial="hidden"
         className="absolute inset-0 pointer-events-none transition-colors duration-500" 
       />
 
-      {/* Client Logo (Centered) */}
+      {/* Client Logo OR Title (Centered) */}
       <div className="absolute inset-0 m-auto flex flex-col items-center justify-center pointer-events-none p-4">
         <motion.div
           variants={{
@@ -53,11 +77,17 @@ const ProjectCard = ({ project }: { project: Project }) => {
           }}
           className="flex items-center justify-center w-full h-full"
         >
-          {project.logo ? (
-            <img src={project.logo} alt={project.client} className="max-w-[60%] max-h-[60%] object-contain" />
+          {/* Si on a un logo, on l'affiche. Sinon on affiche le titre en texte */}
+          {logoImage && !logoImage.endsWith('null') ? (
+            <img 
+              src={logoImage} 
+              alt={title} 
+              className="max-w-[70%] max-h-[60%] object-contain drop-shadow-2xl" 
+              referrerPolicy="no-referrer"
+            />
           ) : (
-            <h3 className="text-2xl md:text-3xl font-bold text-white text-center">
-              {project.client}
+            <h3 className="text-2xl md:text-3xl font-bold text-white text-center drop-shadow-lg">
+              {title}
             </h3>
           )}
         </motion.div>
@@ -65,33 +95,36 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
       {/* Action Buttons (Appearing on hover) */}
       <div className="absolute bottom-10 left-0 right-0 flex justify-center items-center gap-4 z-10">
-        {/* Button 1: Instagram */}
-        <motion.button 
-          variants={buttonVariants}
-          transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
-          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110"
-          onClick={(e) => {
-            e.stopPropagation();
-            // Add instagram link logic here if available
-          }}
-        >
-          <Instagram className="w-5 h-5 text-white group-hover/btn:text-[#6f42c1] transition-colors duration-300" />
-        </motion.button>
+        
+        {/* Button 1: Instagram (S'affiche uniquement si renseigné) */}
+        {instagramUrl && (
+          <motion.button 
+            variants={buttonVariants}
+            transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
+            className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Formatage du lien Instagram (ajoute https:// si l'utilisateur a juste mis @pseudo)
+              const finalLink = instagramUrl.startsWith('http') 
+                ? instagramUrl 
+                : `https://instagram.com/${instagramUrl.replace('@', '')}`;
+              window.open(finalLink, '_blank');
+            }}
+          >
+            <Instagram className="w-5 h-5 text-white group-hover/btn:text-[#6f42c1] transition-colors duration-300" />
+          </motion.button>
+        )}
 
-        {/* Button 2: Bibliothèque */}
+        {/* Button 2: Bibliothèque (Toujours présent) */}
         <motion.button 
           variants={buttonVariants}
           transition={{ duration: 0.3, ease: "easeOut", delay: 0.2 }}
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/reference/${project.id}`);
+            navigate(`/reference/${targetId}`);
           }}
           className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110 relative overflow-hidden"
         >
-          {/* Gradient text effect for the icon requires an SVG mask or specific CSS, 
-              using a simpler approach with a gradient background clip for the icon if possible, 
-              or just a solid color that represents the gradient. 
-              Here we use a trick to apply gradient to the stroke/fill of the icon. */}
           <svg width="0" height="0">
             <linearGradient id="purple-cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop stopColor="#6f42c1" offset="0%" />
@@ -101,15 +134,16 @@ const ProjectCard = ({ project }: { project: Project }) => {
           <Folder className="w-5 h-5 text-white group-hover/btn:[stroke:url(#purple-cyan-grad)] transition-all duration-300" />
         </motion.button>
 
-        {/* Button 3: Site web (Conditional) */}
-        {project.website && (
+        {/* Button 3: Site web (S'affiche uniquement si renseigné) */}
+        {websiteUrl && (
           <motion.button 
             variants={buttonVariants}
             transition={{ duration: 0.3, ease: "easeOut", delay: 0.3 }}
             className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110"
             onClick={(e) => {
               e.stopPropagation();
-              window.open(project.website, '_blank');
+              const finalWebsite = websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`;
+              window.open(finalWebsite, '_blank');
             }}
           >
             <Globe className="w-5 h-5 text-white group-hover/btn:text-[#0dcaf0] transition-colors duration-300" />

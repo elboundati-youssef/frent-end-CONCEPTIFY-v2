@@ -30,10 +30,18 @@ const Footer = () => {
                   Appelez-nous
                 </p>
                 <a
+                  href="tel:+212539324232"
+                  className="text-2xl md:text-3xl font-display font-medium hover:text-accent transition-colors"
+                >
+                  Fixe: +212 539 32 42 32
+                </a>
+                <br />
+                <br />
+                <a
                   href="tel:+212654179010"
                   className="text-2xl md:text-3xl font-display font-medium hover:text-accent transition-colors"
                 >
-                  +212 654 17 90 10
+                 Mobile: +212 654 17 90 10
                 </a>
               </div>
               <div>
@@ -41,11 +49,20 @@ const Footer = () => {
                   Écrivez-nous
                 </p>
                 <a
-                  href="mailto:hello@conceptify.ma"
+                  href="mailto:contact@conceptify.pro"
                   className="text-2xl md:text-3xl font-display font-medium hover:text-accent transition-colors break-all"
                 >
-                  hello@conceptify.ma
+                  contact@conceptify.pro
                 </a>
+                <br />
+                <br />
+                 <a
+                  href="mailto:salaheddineous@gmail.com"
+                  className="text-2xl md:text-3xl font-display font-medium hover:text-accent transition-colors break-all"
+                >
+                  salaheddineous@gmail.com
+                </a>
+                
               </div>
             </div>
           </ScrollReveal>
@@ -74,10 +91,7 @@ const Footer = () => {
               </a>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-4 mt-4 md:mt-0">
-              <div className="flex gap-4 text-xs text-gray-500">
-                <a href="/login" className="hover:text-white transition-colors">Admin Login</a>
-                <a href="/dashboard" className="hover:text-white transition-colors">Dashboard</a>
-              </div>
+             
               <div className="text-sm text-gray-600">
                 © {new Date().getFullYear()} Conceptify. Tous droits réservés.
               </div>

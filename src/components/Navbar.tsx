@@ -32,9 +32,9 @@ const Navbar = () => {
 
   const links = [
     { name: "Accueil", href: isHome ? "#" : "/" },
+     { name: "Expertises", href: isHome ? "#expertises" : "/#expertises" },
     { name: "Portfolio", href: isHome ? "#portfolio" : "/#portfolio" },
     { name: "Qui sommes-nous", href: isHome ? "#about" : "/#about" },
-    { name: "Expertises", href: isHome ? "#expertises" : "/#expertises" },
     { name: "Contact", href: isHome ? "#contact" : "/#contact" },
   ];
 
