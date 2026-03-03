@@ -20,48 +20,45 @@ const Library = () => {
   
   // États pour séparer la vidéo principale et la galerie
   const [mainVideo, setMainVideo] = useState<any>(null);
-  const [galleryImages, setGalleryImages] = useState<any[]>([]);
   
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  // NOUVEAU: on appelle ça galleryMedia au lieu de galleryImages car il y aura aussi des vidéos
+  const [galleryMedia, setGalleryMedia] = useState<any[]>([]);
+  
+  // NOUVEAU: on stocke tout l'objet média cliqué (pour savoir si c'est une image ou une vidéo dans le zoom)
+  const [selectedMedia, setSelectedMedia] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // 1. On utilise votre route /api/reference (qui appelle indexApi et renvoie du JSON)
         const refRes = await api.get('/reference');
         const allReferences = refRes.data?.data || refRes.data || [];
         
-        // On cherche le client spécifique dans la liste
         const currentRef = allReferences.find((r: any) => String(r.id) === String(id));
         setReference(currentRef);
 
-        // 2. On récupère TOUS les projets
         const projRes = await api.get('/project');
         const allProjects = projRes.data?.data || projRes.data || [];
 
-        // 3. On filtre pour ne garder que les projets de CE client
         const clientProjects = allProjects.filter(
           (p: any) => String(p.reference_id) === String(id)
         );
 
-        // 4. On isole la première vidéo trouvée pour la mettre en grand en haut
-        const video = clientProjects.find((p: any) => p.type === 'video' || (p.link && String(p.link).includes('.mp4')));
-        setMainVideo(video || null);
+        // 1. On isole la première vidéo trouvée pour la mettre en grand en haut
+        const firstVideo = clientProjects.find((p: any) => p.type === 'video' || (p.link && String(p.link).includes('.mp4')));
+        setMainVideo(firstVideo || null);
 
-        // 5. On filtre explicitement les IMAGES pour la galerie en bas
-        const images = clientProjects.filter((p: any) => {
-            // Si c'est la vidéo principale, on l'exclut
-            if (video && p.id === video.id) return false;
-            
-            // On s'assure que c'est bien une image
-            return p.type === 'image' || (p.link && (String(p.link).includes('.jpg') || String(p.link).includes('.png') || String(p.link).includes('.webp')));
+        // 2. CORRECTION: On garde TOUT LE RESTE pour la galerie (les autres vidéos ET les images)
+        const remainingMedia = clientProjects.filter((p: any) => {
+            // On exclut uniquement la vidéo qui est déjà affichée en haut
+            if (firstVideo && p.id === firstVideo.id) return false;
+            return true; 
         });
         
         // Tri par ordre si disponible
-        images.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-        setGalleryImages(images);
+        remainingMedia.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+        setGalleryMedia(remainingMedia);
 
       } catch (error) {
         console.error("Erreur API:", error);
@@ -160,64 +157,106 @@ const Library = () => {
         </motion.div>
       )}
 
-      {/* GALERIE D'IMAGES */}
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-        {galleryImages.map((item: any, i: number) => (
-          <motion.div
-            key={item.id || i}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{
-              delay: (i % 3) * 0.1,
-              duration: 0.8,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer bg-white/5 border border-white/10"
-            onClick={() => setSelectedImage(getMediaUrl(item.link))}
-          >
-           <img
-              // L'ASTUCE EST ICI : on dit à React de prendre 'link', et si c'est vide, de prendre 'image'
-              src={getMediaUrl(item.link || item.image)} 
-              alt={`${reference.title} Média ${i}`}
-              className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
-          </motion.div>
-        ))}
+      {/* GALERIE D'IMAGES ET VIDÉOS SUPPLÉMENTAIRES (Mise en page 3 par 3) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {galleryMedia.map((item: any, i: number) => {
+          // On vérifie si cet élément de la galerie est une vidéo
+          const isVideo = item.type === 'video' || (item.link && String(item.link).includes('.mp4'));
+          const url = getMediaUrl(item.link || item.image);
+
+          return (
+            <motion.div
+              key={item.id || i}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{
+                delay: (i % 3) * 0.1,
+                duration: 0.8,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              // aspect-square permet d'avoir des carrés parfaits, pour un alignement 3x3 très propre
+              className="relative group rounded-2xl overflow-hidden cursor-pointer bg-white/5 border border-white/10 aspect-square md:aspect-[4/5]"
+              onClick={() => setSelectedMedia(item)}
+            >
+              {isVideo ? (
+                // Si c'est une vidéo, on la joue en silence dans la case
+                <video 
+                  src={url} 
+                  autoPlay 
+                  muted 
+                  loop 
+                  playsInline
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              ) : (
+                // Si c'est une image
+                <img
+                  src={url} 
+                  alt={`${reference.title} Média ${i}`}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  loading="lazy"
+                />
+              )}
+              
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500 flex items-center justify-center">
+                {isVideo && (
+                   <span className="opacity-0 group-hover:opacity-100 bg-black/50 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm transition-opacity duration-300">
+                     Lecture
+                   </span>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* MESSAGE SI AUCUN MÉDIA */}
-      {!mainVideo && galleryImages.length === 0 && (
+      {!mainVideo && galleryMedia.length === 0 && (
         <div className="text-center py-20 text-gray-500 border border-dashed border-white/10 rounded-3xl">
           Aucun média n'a été trouvé pour ce client. Ajoutez des projets dans le Dashboard.
         </div>
       )}
 
-      {/* LIGHTBOX (Zoom sur Image) */}
+      {/* LIGHTBOX (Zoom sur Image ou Vidéo) */}
       <AnimatePresence>
-        {selectedImage && (
+        {selectedMedia && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setSelectedMedia(null)}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-2xl p-4 md:p-12 cursor-zoom-out"
           >
-            <motion.img
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              src={selectedImage}
-              alt="En plein écran"
-              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-            />
+            {/* On détermine si on affiche une vidéo ou une image dans la Lightbox */}
+            {selectedMedia.type === 'video' || (selectedMedia.link && String(selectedMedia.link).includes('.mp4')) ? (
+              <motion.video
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                src={getMediaUrl(selectedMedia.link || selectedMedia.image)}
+                controls
+                autoPlay
+                onClick={(e) => e.stopPropagation()} // Évite de fermer quand on clique sur Play/Pause
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              />
+            ) : (
+              <motion.img
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                src={getMediaUrl(selectedMedia.link || selectedMedia.image)}
+                alt="En plein écran"
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              />
+            )}
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedImage(null);
+                setSelectedMedia(null);
               }}
               className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors"
             >

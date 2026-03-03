@@ -30,7 +30,7 @@ const SmoothScroll = ({ children }: { children: React.ReactNode }) => {
   return (
     <ReactLenis root options={{ lerp: 0.08, smoothWheel: true }}>
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0] origin-left z-[100]"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8E2A8B] to-[#4DA8C8] origin-left z-[100]"
         style={{ scaleX: smoothProgress }}
       />
       {children}

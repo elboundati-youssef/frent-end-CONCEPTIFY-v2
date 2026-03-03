@@ -75,13 +75,19 @@ const Navbar = () => {
       <nav
         className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-300 ${scrolled ? "bg-bg/80 backdrop-blur-lg border-b border-white/5 py-4" : "bg-transparent py-6"}`}
       >
-        <div className="container mx-auto px-6 flex justify-between items-center">
+       <div className="container mx-auto px-6 flex justify-between items-center">
           <Link
             to="/"
-            className="text-2xl font-display font-bold tracking-tighter relative z-[70]"
+            // J'ai enlevé les classes de texte (text-2xl, font-bold...) car c'est maintenant une image
+            className="relative z-[70] flex items-center" 
             onClick={() => setMobileMenuOpen(false)}
           >
-            CONCEPTIFY.
+            <img 
+              src="/img/Conceptify_logo-01.png" 
+              alt="Conceptify Logo" 
+              // h-8 ou h-10 gère la hauteur du logo pour qu'il s'intègre bien dans la barre de navigation
+              className="h-8 md:h-10 w-auto object-contain" 
+            />
           </Link>
 
           {/* Desktop Menu */}

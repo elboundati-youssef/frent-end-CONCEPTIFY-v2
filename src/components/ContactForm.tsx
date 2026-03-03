@@ -57,7 +57,7 @@ const ContactForm = () => {
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="text-[#6f42c1] hover:text-[#0dcaf0] transition-colors text-sm font-medium mt-4 inline-block"
+          className="text-[#8E2A8B] hover:text-[#0dcaf0] transition-colors text-sm font-medium mt-4 inline-block"
         >
           Envoyer un autre message
         </button>

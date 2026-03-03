@@ -65,7 +65,7 @@ const Portfolio = () => {
         <div className="flex flex-wrap gap-3">
           {categories.map((cat) => (
             <Magnetic key={cat} className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0] rounded-full blur opacity-0 group-hover:opacity-50 transition duration-500" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#8E2A8B] to-[#4DA8C8] rounded-full blur opacity-0 group-hover:opacity-50 transition duration-500" />
               <button
                 onClick={() => setActiveFilter(cat)}
                 className={`relative px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 border ${

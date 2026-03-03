@@ -31,7 +31,7 @@ const Hero = () => {
           style={{ animationDuration: "4s" }}
         />
         <div
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#0dcaf0]/20 rounded-full blur-[120px] mix-blend-screen animate-pulse"
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#4DA8C8]/20 rounded-full blur-[120px] mix-blend-screen animate-pulse"
           style={{ animationDuration: "5s", animationDelay: "1s" }}
         />
       </div>
@@ -46,7 +46,7 @@ const Hero = () => {
           Chez CONCEPTIFY,
           <br />
           nous créons{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0]">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8E2A8B] to-[#4DA8C8]">
             l'exception.
           </span>
         </motion.h1>
@@ -67,7 +67,7 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
           <Magnetic className="relative group inline-block">
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0] rounded-full blur opacity-25 group-hover:opacity-100 transition duration-500 group-hover:duration-200" />
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#8E2A8B] to-[#4DA8C8] rounded-full blur opacity-25 group-hover:opacity-100 transition duration-500 group-hover:duration-200" />
             <a
               href="/portfolio"
               className="relative inline-flex items-center justify-center px-8 py-4 font-medium text-white transition-all duration-300 bg-surface rounded-full hover:bg-surface-hover border border-white/10 hover:border-white/20 overflow-hidden"
@@ -105,7 +105,7 @@ const About = () => {
               <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
                 L'art de la
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8E2A8B] to-[#4DA8C8]">
                   connexion.
                 </span>
               </h2>
@@ -128,7 +128,7 @@ const About = () => {
                 <div className="absolute inset-0 bg-accent/10 mix-blend-overlay" />
               </div>
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent/20 rounded-full blur-3xl" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#0dcaf0]/20 rounded-full blur-3xl" />
+              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#4DA8C8]/20 rounded-full blur-3xl" />
             </ScrollReveal>
           </div>
         </div>
@@ -136,7 +136,7 @@ const About = () => {
 
       {/* Bandeau Statistiques Animé */}
       <section className="border-y border-white/10 bg-[#0a0a0a] py-10 md:py-16 overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#6f42c1]/5 to-[#0dcaf0]/5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#8E2A8B]/5 to-[#4DA8C8]/5" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-12 divide-y md:divide-y-0 md:divide-x divide-white/10">
             {stats.map((stat, index) => (
@@ -145,9 +145,9 @@ const About = () => {
                 delay={index * 0.2}
                 className="flex flex-col items-center justify-center flex-1 pt-8 md:pt-0 w-full"
               >
-                <div className="text-6xl md:text-7xl font-black tracking-tighter flex items-baseline text-transparent bg-clip-text bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0]">
+                <div className="text-6xl md:text-7xl font-black tracking-tighter flex items-baseline text-transparent bg-clip-text bg-gradient-to-r from-[#8E2A8B] to-[#4DA8C8]">
                   <AnimatedCounter from={0} to={stat.num} isK={stat.isK} />
-                  <span className="text-[#0dcaf0]">+</span>
+                  <span className="text-[#4DA8C8]">+</span>
                 </div>
                 <p className="text-xs text-gray-400 font-light uppercase tracking-[0.3em] mt-4 text-center">
                   {stat.label}
@@ -197,7 +197,7 @@ const DomainesExpertise = () => {
                     className={`hidden lg:block text-5xl xl:text-7xl font-black uppercase tracking-tighter transition-all duration-500
                       ${
                         activeService === index
-                          ? "text-transparent bg-clip-text bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0]"
+                          ? "text-transparent bg-clip-text bg-gradient-to-r from-[#8E2A8B] to-[#4DA8C8]"
                           : "text-transparent"
                       }`}
                     style={
@@ -215,7 +215,7 @@ const DomainesExpertise = () => {
                       className={`text-4xl font-black uppercase tracking-tighter transition-all duration-500 mb-4
                         ${
                           activeService === index
-                            ? "text-transparent bg-clip-text bg-gradient-to-r from-[#6f42c1] to-[#0dcaf0]"
+                            ? "text-transparent bg-clip-text bg-gradient-to-r from-[#8E2A8B] to-[#4DA8C8]"
                             : "text-transparent"
                         }`}
                       style={
@@ -249,7 +249,7 @@ const DomainesExpertise = () => {
                           </p>
                           <button
                             onClick={() => navigate(`/service/${service.id}`)}
-                            className="px-6 py-3 rounded-full border border-[#0dcaf0] text-white text-sm font-bold uppercase tracking-wider hover:bg-[#0dcaf0] hover:text-black transition-colors mb-8"
+                            className="px-6 py-3 rounded-full border border-[#4DA8C8] text-white text-sm font-bold uppercase tracking-wider hover:bg-[#4DA8C8] hover:text-black transition-colors mb-8"
                           >
                             Explorer
                           </button>
@@ -298,7 +298,7 @@ const DomainesExpertise = () => {
                         onClick={() =>
                           navigate(`/service/${servicesData[activeService].id}`)
                         }
-                        className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-300 bg-black/50 backdrop-blur-md rounded-full border border-[#0dcaf0] hover:bg-[#0dcaf0] hover:text-black overflow-hidden"
+                        className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-300 bg-black/50 backdrop-blur-md rounded-full border border-[#4DA8C8] hover:bg-[#4DA8C8] hover:text-black overflow-hidden"
                       >
                         <span className="relative z-10 flex items-center gap-2 uppercase tracking-wider text-sm">
                           Explorer
@@ -373,7 +373,7 @@ const Expertise = () => {
 
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="w-8 h-8 border-4 border-[#0dcaf0] border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-[#4DA8C8] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-[300px]">
@@ -445,7 +445,7 @@ const PortfolioPreview = () => {
 
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="w-8 h-8 border-4 border-[#6f42c1] border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-[#8E2A8B] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
