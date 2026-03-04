@@ -8,7 +8,8 @@ const WhyChooseUs = () => {
     {
       icon: Sparkles,
       title: "Créativité audacieuse",
-      desc: "Nous brisons les conventions pour imaginer des solutions innovantes et originales.",
+      desc: <>Nous brisons les conventions pour imaginer des solutions innovantes <br/>et originales.</>,
+      descMobile:<>Nous brisons <br/>les conventions pour imaginer des solutions innovantes et originales.</>,
       color: "text-[#8E2A8B]", // Primary Purple
       glowColor: "bg-[#8E2A8B]",
       delay: 0.1
@@ -16,7 +17,8 @@ const WhyChooseUs = () => {
     {
       icon: Rocket,
       title: "Innovation continue",
-      desc: "Toujours à la pointe, nous intégrons les dernières technologies pour un impact maximal.",
+      desc: <>Toujours à la pointe, nous intégrons <br/>les dernières technologies pour un impact maximal.</>,
+      descMobile: <>Toujours à la pointe, <br/>nous intégrons les dernières technologies pour un impact maximal.</>,
       color: "text-[#4DA8C8]", // Primary Blue
       glowColor: "bg-[#4DA8C8]",
       delay: 0.2
@@ -24,7 +26,8 @@ const WhyChooseUs = () => {
     {
       icon: Award,
       title: "Excellence opérationnelle",
-      desc: "Un service irréprochable où chaque détail est soigné pour garantir votre satisfaction.",
+      desc: <>Un service irréprochable où chaque détail est soigné pour garantir votre satisfaction.</>,
+      descMobile: <>Un service irréprochable <br/>où chaque détail est soigné pour garantir <br/>votre satisfaction.</>,
       color: "text-[#8E2A8B]", // Primary Purple
       glowColor: "bg-[#8E2A8B]",
       delay: 0.3
@@ -32,7 +35,8 @@ const WhyChooseUs = () => {
     {
       icon: Handshake,
       title: "Engagement client",
-      desc: "Des partenariats basés sur la confiance, le respect et le succès partagé.",
+      desc: <>Des partenariats basés sur la confiance,<br/> le respect et le succès partagé.</>,
+      descMobile: <>Des partenariats basés <br/>sur la confiance, le respect et le succès partagé.</>,
       color: "text-[#4DA8C8]", // Primary Blue
       glowColor: "bg-[#4DA8C8]",
       delay: 0.4
@@ -73,9 +77,14 @@ const WhyChooseUs = () => {
             </span>
           </h3>
           
-          <p className="text-base md:text-xl text-gray-400 leading-relaxed px-2">
-            En choisissant <span className="text-white font-semibold">CONCEPTIFY</span>, vous optez pour un partenaire stratégique qui comprend vos défis, partage votre vision et s'engage à faire la différence. Nos compétences en création de contenu, gestion événementielle, stratégies de communication et accompagnement professionnel sont à votre disposition pour vous aider à atteindre et dépasser vos objectifs.
-          </p>
+         <p className="text-base md:text-xl text-gray-400 leading-relaxed px-2">
+  <span className="hidden md:inline">
+    En choisissant <span className="text-white font-semibold">CONCEPTIFY</span>, vous optez pour un partenaire stratégique qui comprend <br/>vos défis, partage votre vision et s'engage à faire la différence. <br/>Nos compétences en création de contenu, gestion événementielle, stratégies <br/>de communication et accompagnement professionnel sont à votre disposition <br/> pour vous aider à atteindre et dépasser vos objectifs.
+  </span>
+  <span className="md:hidden">
+    En choisissant <span className="text-white font-semibold">CONCEPTIFY</span>,<br/> vous optez pour un partenaire stratégique qui comprend vos défis, partage votre vision et s'engage à faire la différence.<br/> Nos compétences en création de contenu, gestion événementielle, stratégies <br/>de communication et accompagnement professionnel sont à votre disposition<br/> pour vous aider à atteindre et dépasser<br/> vos objectifs.
+  </span>
+</p>
         </motion.div>
 
         {/* ========================================== */}
@@ -126,9 +135,10 @@ const WhyChooseUs = () => {
                     <h5 className="text-sm md:text-xl font-display font-semibold text-white mb-2 md:mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all duration-300 leading-tight">
                       {valeur.title}
                     </h5>
-                    <p className="text-[10px] md:text-sm leading-snug md:leading-relaxed text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                      {valeur.desc}
-                    </p>
+                   <p className="text-[10px] md:text-sm leading-snug md:leading-relaxed text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+  <span className="hidden md:inline">{valeur.desc}</span>
+  <span className="md:hidden">{valeur.descMobile}</span>
+</p>
                   </div>
 
                   {/* Numéro de fond discret (Watermark ajusté pour mobile) */}

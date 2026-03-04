@@ -4,27 +4,21 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Instagram, Globe, X } from "lucide-react";
 import PageTransition from "../components/PageTransition";
 import api from "../api/axios";
+import { projectsData } from "../data";
 
 // --- Helper pour lire les médias ---
 const getMediaUrl = (path: string | null | undefined) => {
   if (!path || path === "null" || path === "") return "";
   if (path.startsWith("http")) return path;
-  // Nettoie le chemin (transforme les \ de Windows en / pour le web)
   const cleanPath = path.replace(/\\/g, '/').replace(/^\/+/, '');
   return `http://localhost:8000/api/private-image/${cleanPath}`;
 };
 
 const Library = () => {
-  const { id } = useParams(); // ID de la référence
+  const { id } = useParams();
   const [reference, setReference] = useState<any>(null);
-  
-  // États pour séparer la vidéo principale et la galerie
   const [mainVideo, setMainVideo] = useState<any>(null);
-  
-  // NOUVEAU: on appelle ça galleryMedia au lieu de galleryImages car il y aura aussi des vidéos
   const [galleryMedia, setGalleryMedia] = useState<any[]>([]);
-  
-  // NOUVEAU: on stocke tout l'objet média cliqué (pour savoir si c'est une image ou une vidéo dans le zoom)
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,34 +28,73 @@ const Library = () => {
       try {
         const refRes = await api.get('/reference');
         const allReferences = refRes.data?.data || refRes.data || [];
-        
-        const currentRef = allReferences.find((r: any) => String(r.id) === String(id));
-        setReference(currentRef);
 
         const projRes = await api.get('/project');
         const allProjects = projRes.data?.data || projRes.data || [];
 
-        const clientProjects = allProjects.filter(
-          (p: any) => String(p.reference_id) === String(id)
-        );
+        if (allReferences.length > 0) {
+          // ✅ Données API disponibles
+          const currentRef = allReferences.find((r: any) => String(r.id) === String(id));
+          setReference(currentRef);
 
-        // 1. On isole la première vidéo trouvée pour la mettre en grand en haut
-        const firstVideo = clientProjects.find((p: any) => p.type === 'video' || (p.link && String(p.link).includes('.mp4')));
-        setMainVideo(firstVideo || null);
+          const clientProjects = allProjects.filter(
+            (p: any) => String(p.reference_id) === String(id)
+          );
 
-        // 2. CORRECTION: On garde TOUT LE RESTE pour la galerie (les autres vidéos ET les images)
-        const remainingMedia = clientProjects.filter((p: any) => {
-            // On exclut uniquement la vidéo qui est déjà affichée en haut
+          const firstVideo = clientProjects.find((p: any) => p.type === 'video' || (p.link && String(p.link).includes('.mp4')));
+          setMainVideo(firstVideo || null);
+
+          const remainingMedia = clientProjects.filter((p: any) => {
             if (firstVideo && p.id === firstVideo.id) return false;
-            return true; 
-        });
-        
-        // Tri par ordre si disponible
-        remainingMedia.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-        setGalleryMedia(remainingMedia);
+            return true;
+          });
+          remainingMedia.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+          setGalleryMedia(remainingMedia);
+
+        } else {
+          // ✅ Fallback vers données statiques
+          const staticProject = projectsData.find(p => String(p.id) === String(id));
+
+          if (staticProject) {
+            setReference({
+              id: staticProject.id,
+              title: staticProject.client,
+              portfolio: { title: staticProject.category },
+              instagram: null,
+              website: staticProject.website || null,
+            });
+
+            const firstVideo = staticProject.gallery.find(g => g.type === "video");
+            setMainVideo(firstVideo ? { id: 0, link: firstVideo.url, type: "video" } : null);
+
+            const remaining = staticProject.gallery
+              .filter(g => g !== firstVideo)
+              .map((g, i) => ({ id: i + 1, link: g.url, type: g.type }));
+            setGalleryMedia(remaining);
+          }
+        }
 
       } catch (error) {
-        console.error("Erreur API:", error);
+        // ✅ Fallback en cas d'erreur réseau
+        const staticProject = projectsData.find(p => String(p.id) === String(id));
+
+        if (staticProject) {
+          setReference({
+            id: staticProject.id,
+            title: staticProject.client,
+            portfolio: { title: staticProject.category },
+            instagram: null,
+            website: staticProject.website || null,
+          });
+
+          const firstVideo = staticProject.gallery.find(g => g.type === "video");
+          setMainVideo(firstVideo ? { id: 0, link: firstVideo.url, type: "video" } : null);
+
+          const remaining = staticProject.gallery
+            .filter(g => g !== firstVideo)
+            .map((g, i) => ({ id: i + 1, link: g.url, type: g.type }));
+          setGalleryMedia(remaining);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -139,17 +172,17 @@ const Library = () => {
 
       {/* ZONE GRANDE VIDÉO */}
       {mainVideo && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="w-full mb-16 rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black"
         >
-          <video 
-            src={getMediaUrl(mainVideo.link)} 
-            controls 
-            autoPlay 
-            muted 
+          <video
+            src={getMediaUrl(mainVideo.link)}
+            controls
+            autoPlay
+            muted
             loop
             playsInline
             className="w-full max-h-[75vh] object-cover"
@@ -157,10 +190,9 @@ const Library = () => {
         </motion.div>
       )}
 
-      {/* GALERIE D'IMAGES ET VIDÉOS SUPPLÉMENTAIRES (Mise en page 3 par 3) */}
+      {/* GALERIE */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {galleryMedia.map((item: any, i: number) => {
-          // On vérifie si cet élément de la galerie est une vidéo
           const isVideo = item.type === 'video' || (item.link && String(item.link).includes('.mp4'));
           const url = getMediaUrl(item.link || item.image);
 
@@ -170,40 +202,32 @@ const Library = () => {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{
-                delay: (i % 3) * 0.1,
-                duration: 0.8,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              // aspect-square permet d'avoir des carrés parfaits, pour un alignement 3x3 très propre
+              transition={{ delay: (i % 3) * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="relative group rounded-2xl overflow-hidden cursor-pointer bg-white/5 border border-white/10 aspect-square md:aspect-[4/5]"
               onClick={() => setSelectedMedia(item)}
             >
               {isVideo ? (
-                // Si c'est une vidéo, on la joue en silence dans la case
-                <video 
-                  src={url} 
-                  autoPlay 
-                  muted 
-                  loop 
+                <video
+                  src={url}
+                  autoPlay
+                  muted
+                  loop
                   playsInline
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               ) : (
-                // Si c'est une image
                 <img
-                  src={url} 
+                  src={url}
                   alt={`${reference.title} Média ${i}`}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
                 />
               )}
-              
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500 flex items-center justify-center">
                 {isVideo && (
-                   <span className="opacity-0 group-hover:opacity-100 bg-black/50 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm transition-opacity duration-300">
-                     Lecture
-                   </span>
+                  <span className="opacity-0 group-hover:opacity-100 bg-black/50 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm transition-opacity duration-300">
+                    Lecture
+                  </span>
                 )}
               </div>
             </motion.div>
@@ -218,7 +242,7 @@ const Library = () => {
         </div>
       )}
 
-      {/* LIGHTBOX (Zoom sur Image ou Vidéo) */}
+      {/* LIGHTBOX */}
       <AnimatePresence>
         {selectedMedia && (
           <motion.div
@@ -228,7 +252,6 @@ const Library = () => {
             onClick={() => setSelectedMedia(null)}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-2xl p-4 md:p-12 cursor-zoom-out"
           >
-            {/* On détermine si on affiche une vidéo ou une image dans la Lightbox */}
             {selectedMedia.type === 'video' || (selectedMedia.link && String(selectedMedia.link).includes('.mp4')) ? (
               <motion.video
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -238,7 +261,7 @@ const Library = () => {
                 src={getMediaUrl(selectedMedia.link || selectedMedia.image)}
                 controls
                 autoPlay
-                onClick={(e) => e.stopPropagation()} // Évite de fermer quand on clique sur Play/Pause
+                onClick={(e) => e.stopPropagation()}
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
               />
             ) : (
@@ -252,7 +275,6 @@ const Library = () => {
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
               />
             )}
-
             <button
               onClick={(e) => {
                 e.stopPropagation();

@@ -6,6 +6,7 @@ import PageTransition from "../components/PageTransition";
 import Magnetic from "../components/Magnetic";
 import ProjectCard from "../components/ProjectCard";
 import api from "../api/axios";
+import { projectsData, secteursData } from "../data";
 
 const Portfolio = () => {
   const [references, setReferences] = useState<any[]>([]);
@@ -21,12 +22,48 @@ const Portfolio = () => {
           api.get('/reference'),
           api.get('/portfolio')
         ]);
-        
-        // Extraction sécurisée des données
-        setReferences(refRes.data?.data || refRes.data || []);
-        setPortfolios(portRes.data?.data || portRes.data || []);
+
+        const refData = refRes.data?.data || refRes.data || [];
+        const portData = portRes.data?.data || portRes.data || [];
+
+        if (refData.length > 0) {
+          // ✅ Données API disponibles
+          setReferences(refData);
+        } else {
+          // ✅ Fallback références statiques
+          setReferences(projectsData.map(p => ({
+            id: p.id,
+            title: p.client,
+            url: p.img,
+            logo: null,
+            instagram: null,
+            website: p.website || null,
+            portfolio: { title: p.category },
+            type: "image",
+          })));
+        }
+
+        if (portData.length > 0) {
+          // ✅ Données API disponibles
+          setPortfolios(portData);
+        } else {
+          // ✅ Fallback portfolios statiques
+          setPortfolios(secteursData.map(s => ({ id: s.id, title: s.title })));
+        }
+
       } catch (error) {
-        console.error("Erreur lors du chargement du portfolio", error);
+        // ✅ Fallback global en cas d'erreur réseau
+        setReferences(projectsData.map(p => ({
+          id: p.id,
+          title: p.client,
+          url: p.img,
+          logo: p.logo || null,
+          instagram: p.instagram || null,
+          website: p.website || null,
+          portfolio: { title: p.category },
+          type: "image",
+        })));
+        setPortfolios(secteursData.map(s => ({ id: s.id, title: s.title })));
       } finally {
         setIsLoading(false);
       }
@@ -34,14 +71,12 @@ const Portfolio = () => {
     loadData();
   }, []);
 
-  // Génération dynamique des catégories à partir de la base de données
   const categories = ["Tous", ...portfolios.map(p => p.title.toUpperCase())];
 
-  // Filtrage intelligent
   const filteredProjects = activeFilter === "Tous"
     ? references
-    : references.filter((ref) => 
-        ref.portfolio?.title?.toUpperCase() === activeFilter || 
+    : references.filter((ref) =>
+        ref.portfolio?.title?.toUpperCase() === activeFilter ||
         ref.portfolio_id?.toString() === portfolios.find(p => p.title.toUpperCase() === activeFilter)?.id.toString()
       );
 
@@ -61,7 +96,6 @@ const Portfolio = () => {
         </h1>
         <div className="w-20 h-1 bg-accent mb-12" />
 
-        {/* Filters Dynamiques */}
         <div className="flex flex-wrap gap-3">
           {categories.map((cat) => (
             <Magnetic key={cat} className="relative group">
@@ -86,7 +120,7 @@ const Portfolio = () => {
           <div className="w-10 h-10 border-4 border-[#0dcaf0] border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : (
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((ref) => (
               <ProjectCard key={ref.id} project={ref} />

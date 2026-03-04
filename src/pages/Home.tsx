@@ -11,7 +11,7 @@ import MarqueeLogos from "../components/MarqueeLogos";
 import ProjectCard from "../components/ProjectCard";
 import BentoCard from "../components/BentoCard";
 import ScrollReveal from "../components/ScrollReveal";
-import { servicesData } from "../data";
+import { servicesData, secteursData, projectsData } from "../data";
 import api from "../api/axios"; 
 import WhyChooseUs from "../components/WhyChooseUs";
 
@@ -24,7 +24,7 @@ const getImageUrl = (path: string | null | undefined) => {
 const Hero = () => {
   return (
     // overflow-hidden et w-full garantissent que rien ne dépasse à droite
-    <section className="relative w-full min-h-[100svh] flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative w-full min-h-[82svh] md:min-h-[100svh] flex items-center justify-center overflow-hidden pt-20">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(111,66,193,0.15),_rgba(5,5,5,1)_60%)]" />
         <div
@@ -58,7 +58,8 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="text-base sm:text-lg md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 md:mb-12 font-light px-4"
         >
-          Bien plus qu'une agence, nous réinventons la connexion <br className="hidden md:block" /> entre les marques et leur public.
+          <span className="hidden md:inline">Bien plus qu'une agence, nous réinventons la connexion <br /> entre les marques et leur public.</span>
+<span className="md:hidden">Bien plus qu'une agence,<br /> Nous réinventons la connexion <br />entre les marques et leur public.</span>
         </motion.p>
 
         <motion.div
@@ -115,16 +116,17 @@ const About = () => {
                   connexion.
                 </span>
               </h2>
-              <p className="text-base md:text-lg text-gray-400 mb-8 leading-relaxed">
-                Basée au Maroc depuis 2018, CONCEPTIFY est une agence créative
-                indépendante qui repousse les limites de la communication
-                traditionnelle. Nous concevons des stratégies sur-mesure et des
-                expériences mémorables pour des marques ambitieuses. Notre ADN :
-                Créativité, Innovation et Expertise.
-              </p>
+             <p className="text-base md:text-lg text-gray-400 mb-8 leading-relaxed">
+  <span className="hidden md:inline">
+  Basée au Maroc depuis 2018, <br/>CONCEPTIFY est une agence créative indépendante qui repousse les limites<br/> de la communication traditionnelle.<br/> Nous concevons des stratégies sur-mesure et des expériences mémorables <br/>pour des marques ambitieuses.<br/> Notre ADN : Créativité, Innovation et Expertise.
+</span>
+<span className="md:hidden">
+  Basée au Maroc depuis 2018,<br/> CONCEPTIFY est une agence créative indépendante qui repousse les limites <br/>de la communication traditionnelle.<br/> Nous concevons des stratégies<br/> sur-mesure et des expériences <br/>mémorablespour des marques ambitieuses.<br/> Notre ADN : Créativité, Innovation <br/>et Expertise.
+</span>
+</p>
             </ScrollReveal>
           {/* Ajout de flex et justify-center pour centrer l'image sur mobile */}
-            <ScrollReveal delay={0.2} className="relative mt-12 md:mt-0 flex justify-center">
+            <ScrollReveal delay={0.2} className="relative mt-0 md:mt-0 flex justify-center">
               {/* w-64 réduit la taille sur mobile (environ 256px), md:w-full remet la taille normale sur PC */}
               <div className="w-64 sm:w-72 md:w-full aspect-square rounded-full overflow-hidden border border-white/10 relative z-10">
                 <img
@@ -330,23 +332,26 @@ const Expertise = () => {
         const res = await api.get('/portfolio');
         const data = res.data?.data || res.data || [];
         
-        const formattedData = data.slice(0, 4).map((item: any, index: number) => {
-          let className = "md:col-span-1 md:row-span-1";
-          if (index === 0) className = "md:col-span-2 md:row-span-2";
-          else if (index === 1) className = "md:col-span-2 md:row-span-1";
+        if (data.length > 0) {
+          const formattedData = data.slice(0, 4).map((item: any, index: number) => {
+            let className = "md:col-span-1 md:row-span-1";
+            if (index === 0) className = "md:col-span-2 md:row-span-2";
+            else if (index === 1) className = "md:col-span-2 md:row-span-1";
 
-          return {
-            id: item.id,
-            title: item.title,
-            image: getImageUrl(item.image),
-            desc: item.description,
-            className: className,
-          };
-        });
-
-        setCategories(formattedData);
+            return {
+              id: item.id,
+              title: item.title,
+              image: getImageUrl(item.image),
+              desc: item.description,
+              className: className,
+            };
+          });
+          setCategories(formattedData);
+        } else {
+          setCategories(secteursData);
+        }
       } catch (error) {
-        console.error("Erreur lors de la récupération des expertises", error);
+        setCategories(secteursData);
       } finally {
         setIsLoading(false);
       }
@@ -412,9 +417,32 @@ const PortfolioPreview = () => {
       try {
         const res = await api.get('/reference');
         const data = res.data?.data || res.data || [];
-        setReferences(data.slice(0, 3));
+
+        if (data.length > 0) {
+          setReferences(data.slice(0, 4));
+        } else {
+          setReferences(projectsData.slice(0, 4).map(p => ({
+            id: p.id,
+            title: p.client,
+            url: p.img,
+            logo: null,
+            instagram: null,
+            website: p.website || null,
+            portfolio: p.category,
+            type: "image",
+          })));
+        }
       } catch (error) {
-        console.error("Erreur lors de la récupération des références", error);
+        setReferences(projectsData.slice(0, 3).map(p => ({
+          id: p.id,
+          title: p.client,
+          url: p.img,
+          logo: null,
+          instagram: null,
+          website: p.website || null,
+          portfolio: p.category,
+          type: "image",
+        })));
       } finally {
         setIsLoading(false);
       }
@@ -448,7 +476,7 @@ const PortfolioPreview = () => {
             <div className="w-8 h-8 border-4 border-[#8E2A8B] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
            {references.map((ref, index) => (
               <ScrollReveal key={ref.id} delay={index * 0.15}>
                 <ProjectCard project={{
@@ -485,9 +513,10 @@ const Home = () => {
       <About />
       <WhyChooseUs />
       <DomainesExpertise />
-      <ScrollReveal>
-        <MarqueeLogos />
-      </ScrollReveal>
+      
+      {/* On retire ScrollReveal pour forcer l'affichage immédiat sur mobile */}
+      <MarqueeLogos />
+      
     </PageTransition>
   );
 };
