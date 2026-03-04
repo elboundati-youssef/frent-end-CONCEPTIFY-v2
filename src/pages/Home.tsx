@@ -105,7 +105,7 @@ const About = () => {
 
   return (
     <div className="bg-surface relative z-10 overflow-hidden w-full">
-      <section className="py-16 md:py-32 overflow-hidden w-full" id="about">
+      <section className="py-10 md:py-32 overflow-hidden w-full" id="about">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <ScrollReveal>
@@ -116,7 +116,7 @@ const About = () => {
                   connexion.
                 </span>
               </h2>
-             <p className="text-base md:text-lg text-gray-400 mb-8 leading-relaxed">
+             <p className="text-base md:text-lg text-gray-400 mb-3 md:mb-8 leading-relaxed">
   <span className="hidden md:inline">
   Basée au Maroc depuis 2018, <br/>CONCEPTIFY est une agence créative indépendante qui repousse les limites<br/> de la communication traditionnelle.<br/> Nous concevons des stratégies sur-mesure et des expériences mémorables <br/>pour des marques ambitieuses.<br/> Notre ADN : Créativité, Innovation et Expertise.
 </span>
@@ -433,7 +433,7 @@ const PortfolioPreview = () => {
           })));
         }
       } catch (error) {
-        setReferences(projectsData.slice(0, 3).map(p => ({
+        setReferences(projectsData.slice(0, 4).map(p => ({
           id: p.id,
           title: p.client,
           url: p.img,
