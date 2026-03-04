@@ -13,6 +13,7 @@ import BentoCard from "../components/BentoCard";
 import ScrollReveal from "../components/ScrollReveal";
 import { projectsData, servicesData } from "../data";
 import api from "../api/axios"; // Importation de l'API
+import WhyChooseUs from "../components/WhyChooseUs";
 
 // --- Helper pour les images ---
 const getImageUrl = (path: string | null | undefined) => {
@@ -484,6 +485,7 @@ const Home = () => {
       <Expertise />
       <PortfolioPreview />
       <About />
+      <WhyChooseUs />
       <DomainesExpertise />
       <ScrollReveal>
         <MarqueeLogos />
