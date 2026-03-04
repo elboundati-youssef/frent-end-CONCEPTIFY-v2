@@ -76,8 +76,8 @@ const Footer = () => {
             <img src="/img/Conceptify_logo-01.png" alt="Conceptify Logo" className="h-8 md:h-10 w-auto object-contain" />
             
             <div className="flex gap-6 text-gray-400">
-              <a href="#" className="hover:text-white transition-colors">Instagram</a>
-              <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
+              <a href="https://www.instagram.com/conceptify.pro/" className="hover:text-white transition-colors">Instagram</a>
+              <a href="https://www.linkedin.com/company/conceptify-pro/" className="hover:text-white transition-colors">LinkedIn</a>
               <a href="#" className="hover:text-white transition-colors">Behance</a>
             </div>
             

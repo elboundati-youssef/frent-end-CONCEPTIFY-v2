@@ -58,7 +58,7 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="text-lg md:text-2xl text-gray-400 max-w-3xl mx-auto mb-12 font-light"
         >
-          Bien plus qu'une agence, nous réinventons la connexion entre les
+          Bien plus qu'une agence, nous réinventons la connexion <br/> entre les
           marques et leur public.
         </motion.p>
 
