@@ -44,7 +44,8 @@ const ProjectCard = ({ project }: { project: any }) => {
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.4 }}
       whileHover="hover"
-      className="relative aspect-[4/5] overflow-hidden rounded-xl group break-inside-avoid mb-6 cursor-pointer"
+      // L'aspect ratio est conservé, les marges basses sont réduites sur mobile
+      className="relative aspect-[4/5] overflow-hidden rounded-xl group break-inside-avoid mb-4 md:mb-6 cursor-pointer"
     >
       {/* Background Image with ultra-slow zoom */}
       {bgImage && (
@@ -70,10 +71,10 @@ const ProjectCard = ({ project }: { project: any }) => {
       />
 
       {/* Client Logo OR Title (Centered) */}
-      <div className="absolute inset-0 m-auto flex flex-col items-center justify-center pointer-events-none p-4">
+      <div className="absolute inset-0 m-auto flex flex-col items-center justify-center pointer-events-none p-2 md:p-4">
         <motion.div
           variants={{
-            hover: { y: -20, transition: { duration: 0.4, ease: "easeOut" } }
+            hover: { y: -10, transition: { duration: 0.4, ease: "easeOut" } }
           }}
           className="flex items-center justify-center w-full h-full"
         >
@@ -82,11 +83,13 @@ const ProjectCard = ({ project }: { project: any }) => {
             <img 
               src={logoImage} 
               alt={title} 
-              className="max-w-[70%] max-h-[60%] object-contain drop-shadow-2xl" 
+              // Le logo prend un peu plus d'espace sur mobile pour rester lisible
+              className="max-w-[85%] md:max-w-[70%] max-h-[50%] md:max-h-[60%] object-contain drop-shadow-2xl" 
               referrerPolicy="no-referrer"
             />
           ) : (
-            <h3 className="text-2xl md:text-3xl font-bold text-white text-center drop-shadow-lg">
+            // Le texte est plus petit sur mobile (text-base)
+            <h3 className="text-base md:text-3xl font-bold text-white text-center drop-shadow-lg px-2">
               {title}
             </h3>
           )}
@@ -94,14 +97,16 @@ const ProjectCard = ({ project }: { project: any }) => {
       </div>
 
       {/* Action Buttons (Appearing on hover) */}
-      <div className="absolute bottom-10 left-0 right-0 flex justify-center items-center gap-4 z-10">
+      {/* Boutons plus bas sur mobile (bottom-4) et espacement réduit (gap-2) */}
+      <div className="absolute bottom-4 md:bottom-10 left-0 right-0 flex justify-center items-center gap-2 md:gap-4 z-10 px-2">
         
         {/* Button 1: Instagram (S'affiche uniquement si renseigné) */}
         {instagramUrl && (
           <motion.button 
             variants={buttonVariants}
             transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
-            className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110"
+            // Boutons plus petits sur mobile (w-8 h-8)
+            className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110"
             onClick={(e) => {
               e.stopPropagation();
               // Formatage du lien Instagram (ajoute https:// si l'utilisateur a juste mis @pseudo)
@@ -111,7 +116,8 @@ const ProjectCard = ({ project }: { project: any }) => {
               window.open(finalLink, '_blank');
             }}
           >
-            <Instagram className="w-5 h-5 text-white group-hover/btn:text-[#6f42c1] transition-colors duration-300" />
+            {/* Icône plus petite sur mobile (w-4 h-4) */}
+            <Instagram className="w-4 h-4 md:w-5 md:h-5 text-white group-hover/btn:text-[#6f42c1] transition-colors duration-300" />
           </motion.button>
         )}
 
@@ -123,7 +129,7 @@ const ProjectCard = ({ project }: { project: any }) => {
             e.stopPropagation();
             navigate(`/reference/${targetId}`);
           }}
-          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110 relative overflow-hidden"
+          className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110 relative overflow-hidden"
         >
           <svg width="0" height="0">
             <linearGradient id="purple-cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -131,7 +137,7 @@ const ProjectCard = ({ project }: { project: any }) => {
               <stop stopColor="#0dcaf0" offset="100%" />
             </linearGradient>
           </svg>
-          <Folder className="w-5 h-5 text-white group-hover/btn:[stroke:url(#purple-cyan-grad)] transition-all duration-300" />
+          <Folder className="w-4 h-4 md:w-5 md:h-5 text-white group-hover/btn:[stroke:url(#purple-cyan-grad)] transition-all duration-300" />
         </motion.button>
 
         {/* Button 3: Site web (S'affiche uniquement si renseigné) */}
@@ -139,14 +145,14 @@ const ProjectCard = ({ project }: { project: any }) => {
           <motion.button 
             variants={buttonVariants}
             transition={{ duration: 0.3, ease: "easeOut", delay: 0.3 }}
-            className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110"
+            className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group/btn transition-all duration-300 hover:bg-white/20 hover:scale-110"
             onClick={(e) => {
               e.stopPropagation();
               const finalWebsite = websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`;
               window.open(finalWebsite, '_blank');
             }}
           >
-            <Globe className="w-5 h-5 text-white group-hover/btn:text-[#0dcaf0] transition-colors duration-300" />
+            <Globe className="w-4 h-4 md:w-5 md:h-5 text-white group-hover/btn:text-[#0dcaf0] transition-colors duration-300" />
           </motion.button>
         )}
       </div>
