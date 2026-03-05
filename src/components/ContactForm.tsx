@@ -1,34 +1,49 @@
-import React, { useState } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { ArrowRight } from "lucide-react";
 import api from "../api/axios";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 const ContactForm = () => {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  // On retire le statut "success" puisqu'on va recharger la page
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  
+  const [captchaToken, setCaptchaToken] = useState("");
+  const captchaRef = useRef<HCaptcha>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!captchaToken) {
+      setErrorMessage("Veuillez cocher la case 'Je suis un humain'.");
+      setStatus("error");
+      return;
+    }
+
     setStatus("loading");
     setErrorMessage("");
 
     const formData = new FormData(e.currentTarget);
     
-    // Données sans le captcha
     const data = {
       name: formData.get("name"),
       email: formData.get("email"),
       message: formData.get("message"), 
+      "h-captcha-response": captchaToken, 
     };
 
     try {
       await api.post("/send-mail", data);
       
-      setStatus("success");
-      (e.target as HTMLFormElement).reset();
+      // La ligne magique : on actualise la page directement !
+      window.location.reload();
 
     } catch (error: any) {
       console.error("DÉTAILS DE L'ERREUR:", error.response);
       setStatus("error");
+      
+      setCaptchaToken("");
+      captchaRef.current?.resetCaptcha();
       
       if (error.response?.status === 422) {
           const errors = error.response.data.errors;
@@ -45,25 +60,7 @@ const ContactForm = () => {
     }
   };
 
-  if (status === "success") {
-    return (
-      <div className="bg-surface border border-white/10 rounded-2xl p-8 text-center space-y-4">
-        <div className="flex justify-center">
-          <CheckCircle2 className="w-16 h-16 text-[#0dcaf0] animate-bounce" />
-        </div>
-        <h3 className="text-2xl font-bold text-white">Message envoyé !</h3>
-        <p className="text-gray-400">
-          Merci pour votre message. Notre équipe vous recontactera très prochainement.
-        </p>
-        <button
-          onClick={() => setStatus("idle")}
-          className="text-[#8E2A8B] hover:text-[#0dcaf0] transition-colors text-sm font-medium mt-4 inline-block"
-        >
-          Envoyer un autre message
-        </button>
-      </div>
-    );
-  }
+  // On a supprimé le bloc if (status === "success") { ... }
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -109,9 +106,19 @@ const ContactForm = () => {
         />
       </div>
 
+      <div className="flex justify-center">
+        <HCaptcha
+          sitekey="9fc0f82e-09d0-4a6a-8914-34cc7d282800"
+          onVerify={(token) => setCaptchaToken(token)}
+          onExpire={() => setCaptchaToken("")}
+          ref={captchaRef}
+          theme="dark" 
+        />
+      </div>
+
       <button
         type="submit"
-        disabled={status === "loading"}
+        disabled={status === "loading" || !captchaToken} 
         className="w-full bg-white text-black font-semibold py-4 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {status === "loading" ? (

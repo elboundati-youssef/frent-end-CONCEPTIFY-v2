@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useSpring } from "motion/react";
 import {
   BrowserRouter as Router,
@@ -9,14 +9,16 @@ import {
 import { ReactLenis } from "lenis/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Home from "./pages/Home";
-import Portfolio from "./pages/Portfolio";
-import Library from "./pages/Library";
-import ServiceDetail from "./pages/ServiceDetail";
-import Partenaires from "./pages/Partenaires";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
 import CustomCursor from "./components/CustomCursor";
+
+// --- LAZY LOADING DES PAGES ---
+// Ces composants ne se téléchargeront que lorsque l'utilisateur cliquera sur le lien
+const Home = lazy(() => import("./pages/Home"));
+const Portfolio = lazy(() => import("./pages/Portfolio"));
+const Library = lazy(() => import("./pages/Library"));
+const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
+const Login = lazy(() => import("./pages/Login"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 const SmoothScroll = ({ children }: { children: React.ReactNode }) => {
   const { scrollYProgress } = useScroll();
@@ -51,20 +53,40 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/dashboard');
 
+  // --- CORRECTION DU DÉFILEMENT ---
+  // Remonte tout en haut de la page instantanément à chaque changement de page
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant"
+    });
+  }, [location.pathname]);
+
   return (
     <>
       {!isAdminRoute && <Navbar />}
+      
       <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Home />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-   
-          <Route path="/reference/:id" element={<Library />} />
-          <Route path="/service/:id" element={<ServiceDetail />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
+        {/* --- SUSPENSE POUR L'ATTENTE DU LAZY LOADING --- */}
+        <Suspense 
+          fallback={
+            <div className="min-h-screen flex items-center justify-center bg-[#050505]">
+              <div className="w-12 h-12 border-4 border-[#4DA8C8] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          }
+        >
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<Home />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/reference/:id" element={<Library />} />
+            <Route path="/service/:id" element={<ServiceDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </Suspense>
       </AnimatePresence>
+
       {!isAdminRoute && <Footer />}
     </>
   );

@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import PageTransition from "../components/PageTransition";
 import Magnetic from "../components/Magnetic";
 import ScrollIndicator from "../components/ScrollIndicator";
-import InfiniteMarquee from "../components/InfiniteMarquee";
+
 import AnimatedCounter from "../components/AnimatedCounter";
-import MarqueeLogos from "../components/MarqueeLogos";
+
 import ProjectCard from "../components/ProjectCard";
 import BentoCard from "../components/BentoCard";
 import ScrollReveal from "../components/ScrollReveal";
 import { servicesData, secteursData, projectsData } from "../data";
 import api from "../api/axios"; 
-import WhyChooseUs from "../components/WhyChooseUs";
+
 import { useLocation } from "react-router-dom";
+const InfiniteMarquee = lazy(() => import("../components/InfiniteMarquee"));
+const WhyChooseUs = lazy(() => import("../components/WhyChooseUs"));
+const MarqueeLogos = lazy(() => import("../components/MarqueeLogos"));
 
 const getImageUrl = (path: string | null | undefined) => {
   if (!path) return "";
@@ -513,30 +516,49 @@ const Home = () => {
   useEffect(() => {
     // Si l'URL contient un # (ex: #domaines-expertise)
     if (hash) {
-      // On met un petit délai (500ms) pour laisser le temps à l'animation PageTransition de s'afficher
       setTimeout(() => {
         const element = document.getElementById(hash.replace("#", ""));
+        
         if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+          const offset = window.innerWidth > 768 ? 150 : 100;
+          
+          window.scrollTo({
+            top: elementPosition - offset,
+            behavior: "smooth"
+          });
         }
-      }, 500); 
+      }, 1000); 
     } else {
-      // S'il n'y a pas de #, on s'assure d'être bien en haut de la page
       window.scrollTo(0, 0);
     }
   }, [hash]);
+
   return (
     <PageTransition>
+      {/* Le Hero s'affiche instantanément car il est tout en haut */}
       <Hero />
-      <InfiniteMarquee />
+      
+      {/* On protège l'appel du composant externe avec Suspense */}
+      <Suspense fallback={<div className="h-20 bg-[#050505]"></div>}>
+        <InfiniteMarquee />
+      </Suspense>
+      
       <Expertise />
       <PortfolioPreview />
       <About />
-      <WhyChooseUs />
+      
+      {/* WhyChooseUs est lourd, on le charge uniquement si on scrolle jusque là */}
+      <Suspense fallback={<div className="h-[50vh] bg-[#050505]"></div>}>
+        <WhyChooseUs />
+      </Suspense>
+      
       <DomainesExpertise />
       
-      {/* On retire ScrollReveal pour forcer l'affichage immédiat sur mobile */}
-      <MarqueeLogos />
+      {/* MarqueeLogos est tout en bas, on gagne beaucoup de temps en ne le chargeant pas au début */}
+      <Suspense fallback={<div className="h-[30vh] bg-black"></div>}>
+        <MarqueeLogos />
+      </Suspense>
       
     </PageTransition>
   );
