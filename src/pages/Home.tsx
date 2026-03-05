@@ -14,6 +14,7 @@ import ScrollReveal from "../components/ScrollReveal";
 import { servicesData, secteursData, projectsData } from "../data";
 import api from "../api/axios"; 
 import WhyChooseUs from "../components/WhyChooseUs";
+import { useLocation } from "react-router-dom";
 
 const getImageUrl = (path: string | null | undefined) => {
   if (!path) return "";
@@ -179,9 +180,9 @@ const DomainesExpertise = () => {
 
   return (
     <div className="bg-[#050505] relative z-10 w-full">
-      <section
+     <section
         id="domaines-expertise"
-        className="min-h-screen relative container mx-auto px-4 md:px-6 py-16 md:py-24 flex flex-col lg:flex-row w-full overflow-hidden"
+        className="min-h-screen relative container mx-auto px-4 md:px-6 py-16 md:py-24 flex flex-col lg:flex-row w-full overflow-hidden scroll-mt-24"
       >
         <div className="w-full lg:w-1/2 flex flex-col justify-center gap-8 lg:gap-12 lg:pr-12 z-10">
           <div className="mb-4 md:mb-8">
@@ -189,9 +190,10 @@ const DomainesExpertise = () => {
               <p className="text-xs md:text-sm text-gray-400 uppercase tracking-widest mb-2 md:mb-4">
                 NOS SERVICES
               </p>
-              <h2 className="text-3xl md:text-4xl font-bold text-white">
+              <h2 className="text-3xl md:text-6xl font-bold tracking-tight mb-4 text-white">
                 Domaines d'Expertise
               </h2>
+              <div className="w-16 md:w-20 h-1 bg-[#8E2A8B]" />
             </ScrollReveal>
           </div>
 
@@ -375,6 +377,7 @@ const Expertise = () => {
             <h2 className="text-3xl md:text-6xl font-bold tracking-tight mb-4 text-white">
               Domaines d'Intervention
             </h2>
+            <div className="w-16 md:w-20 h-1 bg-[#8E2A8B]" />
           </div>
         </ScrollReveal>
 
@@ -505,6 +508,23 @@ const PortfolioPreview = () => {
 };
 
 const Home = () => {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    // Si l'URL contient un # (ex: #domaines-expertise)
+    if (hash) {
+      // On met un petit délai (500ms) pour laisser le temps à l'animation PageTransition de s'afficher
+      setTimeout(() => {
+        const element = document.getElementById(hash.replace("#", ""));
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 500); 
+    } else {
+      // S'il n'y a pas de #, on s'assure d'être bien en haut de la page
+      window.scrollTo(0, 0);
+    }
+  }, [hash]);
   return (
     <PageTransition>
       <Hero />
