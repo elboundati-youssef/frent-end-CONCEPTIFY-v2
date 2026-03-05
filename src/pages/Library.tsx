@@ -120,28 +120,29 @@ const Library = () => {
   }
 
   return (
-    <PageTransition className="pt-32 pb-20 min-h-screen container mx-auto px-6">
+    <PageTransition className="pt-32 pb-20 min-h-screen container mx-auto px-4 md:px-6">
       <Link
         to="/portfolio"
-        className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-12 transition-colors group"
+        className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8 md:mb-12 transition-colors group text-sm md:text-base"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />{" "}
         Retour au portfolio
       </Link>
 
       {/* EN-TÊTE DU CLIENT */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 md:gap-6 mb-10 md:mb-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="w-full"
         >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 font-display tracking-tight text-white uppercase">
+          {/* CORRECTION 1 : Titre plus petit sur mobile (text-3xl) */}
+          <h1 className="text-3xl md:text-7xl font-bold mb-4 md:mb-6 font-display tracking-tight text-white uppercase break-words">
             {reference.title || "Projet"}
           </h1>
           <div className="flex items-center gap-4">
-            <span className="px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md text-sm font-medium border border-white/10 text-white">
+            <span className="px-4 py-2 md:px-5 md:py-2.5 rounded-full bg-white/5 backdrop-blur-md text-xs md:text-sm font-medium border border-white/10 text-white">
               {reference.portfolio?.title || "Référence"}
             </span>
             <div className="flex gap-2">
@@ -150,9 +151,9 @@ const Library = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => window.open(reference.instagram.startsWith('http') ? reference.instagram : `https://instagram.com/${reference.instagram.replace('@', '')}`, '_blank')}
-                  className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#6f42c1] border border-white/10 transition-colors"
+                  className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#6f42c1] border border-white/10 transition-colors"
                 >
-                  <Instagram className="w-4 h-4 text-white" />
+                  <Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                 </motion.button>
               )}
               {reference.website && reference.website !== "null" && (
@@ -160,9 +161,9 @@ const Library = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => window.open(reference.website.startsWith('http') ? reference.website : `https://${reference.website}`, '_blank')}
-                  className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#0dcaf0] border border-white/10 transition-colors"
+                  className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#0dcaf0] border border-white/10 transition-colors"
                 >
-                  <Globe className="w-4 h-4 text-white" />
+                  <Globe className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                 </motion.button>
               )}
             </div>
@@ -170,13 +171,13 @@ const Library = () => {
         </motion.div>
       </div>
 
-      {/* ZONE GRANDE VIDÉO */}
+      {/* ZONE GRANDE VIDÉO (La première vidéo prend toute la largeur) */}
       {mainVideo && (
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="w-full mb-16 rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black"
+          className="w-full mb-10 md:mb-16 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black"
         >
           <video
             src={getMediaUrl(mainVideo.link)}
@@ -185,13 +186,14 @@ const Library = () => {
             muted
             loop
             playsInline
-            className="w-full max-h-[75vh] object-cover"
+            className="w-full max-h-[50vh] md:max-h-[75vh] object-cover"
           />
         </motion.div>
       )}
 
       {/* GALERIE */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* CORRECTION 2 : grid-cols-2 sur mobile, lg:grid-cols-3 sur PC, gap réduit sur mobile */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
         {galleryMedia.map((item: any, i: number) => {
           const isVideo = item.type === 'video' || (item.link && String(item.link).includes('.mp4'));
           const url = getMediaUrl(item.link || item.image);
@@ -203,7 +205,7 @@ const Library = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: (i % 3) * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="relative group rounded-2xl overflow-hidden cursor-pointer bg-white/5 border border-white/10 aspect-square md:aspect-[4/5]"
+              className="relative group rounded-xl md:rounded-2xl overflow-hidden cursor-pointer bg-white/5 border border-white/10 aspect-square md:aspect-[4/5]"
               onClick={() => setSelectedMedia(item)}
             >
               {isVideo ? (
@@ -237,7 +239,7 @@ const Library = () => {
 
       {/* MESSAGE SI AUCUN MÉDIA */}
       {!mainVideo && galleryMedia.length === 0 && (
-        <div className="text-center py-20 text-gray-500 border border-dashed border-white/10 rounded-3xl">
+        <div className="text-center py-10 md:py-20 text-gray-500 border border-dashed border-white/10 rounded-2xl md:rounded-3xl text-sm md:text-base">
           Aucun média n'a été trouvé pour ce client. Ajoutez des projets dans le Dashboard.
         </div>
       )}
@@ -280,9 +282,9 @@ const Library = () => {
                 e.stopPropagation();
                 setSelectedMedia(null);
               }}
-              className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors"
+              className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors z-50"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 md:w-6 md:h-6" />
             </button>
           </motion.div>
         )}
