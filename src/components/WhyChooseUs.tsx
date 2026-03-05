@@ -82,7 +82,7 @@ const WhyChooseUs = () => {
     En choisissant <span className="text-white font-semibold">CONCEPTIFY</span>, vous optez pour un partenaire stratégique qui comprend <br/>vos défis, partage votre vision et s'engage à faire la différence. <br/>Nos compétences en création de contenu, gestion événementielle, stratégies <br/>de communication et accompagnement professionnel sont à votre disposition <br/> pour vous aider à atteindre et dépasser vos objectifs.
   </span>
   <span className="md:hidden">
-    En choisissant <span className="text-white font-semibold">CONCEPTIFY</span>,<br/> vous optez pour un partenaire stratégique qui comprend vos défis, partage votre vision et s'engage à faire la différence.<br/> Nos compétences en création de contenu, gestion événementielle, stratégies <br/>de communication et accompagnement professionnel sont à votre disposition<br/> pour vous aider à atteindre et dépasser<br/> vos objectifs.
+    En choisissant <span className="text-white font-semibold">CONCEPTIFY</span>,<br/> vous optez pour un partenaire stratégique <br/>qui comprend vos défis, partage votre vision <br/>et s'engage à faire la différence.<br/> Nos compétences en création de contenu, gestion événementielle, stratégies <br/>de communication et accompagnement professionnel sont à votre disposition<br/> pour vous aider à atteindre et dépasser<br/> vos objectifs.
   </span>
 </p>
         </motion.div>

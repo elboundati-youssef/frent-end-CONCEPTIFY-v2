@@ -252,9 +252,10 @@ const DomainesExpertise = () => {
                             />
                             <div className="absolute inset-0 bg-black/40" />
                           </div>
-                          <p className="text-gray-400 mb-6 text-sm sm:text-base">
-                            {service.desc}
-                          </p>
+                          <p className="text-gray-400 mb-6 text-sm sm:text-base whitespace-pre-line">
+  <span className="hidden md:inline">{service.desc}</span>
+  <span className="md:hidden">{service.descMobile}</span>
+</p>
                           <button
                             onClick={() => navigate(`/service/${service.id}`)}
                             className="px-5 py-2.5 rounded-full border border-[#4DA8C8] text-white text-xs sm:text-sm font-bold uppercase tracking-wider hover:bg-[#4DA8C8] hover:text-black transition-colors mb-4"
@@ -294,9 +295,9 @@ const DomainesExpertise = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                   >
-                    <p className="text-xl text-white font-light leading-relaxed mb-8 max-w-lg backdrop-blur-sm bg-black/20 p-6 rounded-2xl border border-white/10">
-                      {servicesData[activeService].desc}
-                    </p>
+                   <p className="text-xl text-white font-light leading-relaxed mb-8 max-w-lg backdrop-blur-sm bg-black/20 p-6 rounded-2xl border border-white/10 whitespace-pre-line">
+  {servicesData[activeService].desc}
+</p>
 
                     <Magnetic>
                       <button

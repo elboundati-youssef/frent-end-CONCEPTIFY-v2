@@ -38,9 +38,10 @@ const ServiceDetail = () => {
             {service.title}
           </h1>
           <div className="w-20 h-1 bg-accent mb-8" />
-          <p className="text-xl text-gray-300 max-w-3xl leading-relaxed">
-            {service.desc}
-          </p>
+          <p className="text-xl text-gray-300 max-w-3xl leading-relaxed whitespace-pre-line">
+  <span className="hidden md:inline">{service.descdetail}</span>
+  <span className="md:hidden">{service.descdetailMobile}</span>
+</p>
         </motion.div>
       </div>
 
@@ -66,16 +67,14 @@ const ServiceDetail = () => {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl font-bold mb-6">Notre Méthodologie</h2>
-          <p className="text-gray-400 leading-relaxed mb-4">
-            Nous abordons chaque projet avec une approche stratégique et
-            créative. Notre objectif est de comprendre en profondeur vos besoins
-            pour proposer des solutions sur-mesure qui font la différence.
-          </p>
-          <p className="text-gray-400 leading-relaxed">
-            De la conception à l'exécution, notre équipe d'experts vous
-            accompagne à chaque étape pour garantir le succès de votre
-            initiative.
-          </p>
+        <p className="text-gray-400 leading-relaxed mb-4">
+  <span className="hidden md:inline">Nous abordons chaque projet avec une approche stratégique et créative. <br/>Notre objectif est de comprendre en profondeur vos besoins pour proposer <br/>des solutions sur-mesure qui font la différence.</span>
+  <span className="md:hidden">Nous abordons chaque projet avec une approche stratégique et créative. <br/>Notre objectif est de comprendre en profondeur vos besoins pour proposer des solutions<br/> sur-mesure qui font la différence.</span>
+</p>
+<p className="text-gray-400 leading-relaxed">
+  <span className="hidden md:inline">De la conception à l'exécution, notre équipe d'experts vous accompagne <br/>à chaque étape pour garantir le succès de votre initiative.</span>
+  <span className="md:hidden">De la conception à l'exécution, notre équipe d'experts vous accompagne à chaque étape <br/>pour garantir le succès de votre initiative.</span>
+</p>
         </motion.div>
 
         <motion.div
@@ -87,26 +86,26 @@ const ServiceDetail = () => {
           <h2 className="text-3xl font-bold mb-6">Pourquoi nous choisir ?</h2>
           <ul className="space-y-4 text-gray-400">
             <li className="flex items-start gap-3">
-              <span className="text-[#0dcaf0] font-bold mt-1">✓</span>
-              <span>
-                Une expertise reconnue dans le domaine avec des résultats
-                prouvés.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-[#0dcaf0] font-bold mt-1">✓</span>
-              <span>
-                Une approche personnalisée et centrée sur vos objectifs
-                spécifiques.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-[#0dcaf0] font-bold mt-1">✓</span>
-              <span>
-                Une équipe passionnée, créative et toujours à l'affût des
-                dernières tendances.
-              </span>
-            </li>
+  <span className="text-[#0dcaf0] font-bold mt-1">✓</span>
+  <span>
+    <span className="hidden md:inline">Une expertise reconnue dans le domaine avec des résultats prouvés.</span>
+    <span className="md:hidden">Une expertise reconnue dans le domaine <br/>avec des résultats prouvés.</span>
+  </span>
+</li>
+<li className="flex items-start gap-3">
+  <span className="text-[#0dcaf0] font-bold mt-1">✓</span>
+  <span>
+    <span className="hidden md:inline">Une approche personnalisée et centrée sur vos objectifs spécifiques.</span>
+    <span className="md:hidden">Une approche personnalisée et centrée <br/>sur vos objectifs spécifiques.</span>
+  </span>
+</li>
+<li className="flex items-start gap-3">
+  <span className="text-[#0dcaf0] font-bold mt-1">✓</span>
+  <span>
+    <span className="hidden md:inline">Une équipe passionnée, créative et toujours à l'affût des dernières tendances.</span>
+    <span className="md:hidden">Une équipe passionnée, créative et toujours <br/>à l'affût des dernières tendances.</span>
+  </span>
+</li>
           </ul>
         </motion.div>
       </div>
