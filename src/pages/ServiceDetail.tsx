@@ -1,5 +1,5 @@
 // --- FICHIER: src/pages/ServiceDetail.tsx ---
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "motion/react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -9,6 +9,35 @@ import { servicesData } from "../data";
 const ServiceDetail = () => {
   const { id } = useParams();
   const service = servicesData.find((s) => s.id === id);
+
+  // --- LOGIQUE SEO DYNAMIQUE POUR LA PAGE SERVICE ---
+  useEffect(() => {
+    if (service) {
+      // 1. Titre dynamique basé sur le nom du service
+      document.title = `${service.title} | Conceptify Agence Digitale`;
+      
+      // 2. Description dynamique basée sur la description du service
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        // On coupe la description si elle est trop longue pour Google (max ~160 caractères)
+        const cleanDesc = service.descdetail.substring(0, 155) + "...";
+        metaDescription.setAttribute("content", cleanDesc);
+      }
+    }
+
+    // 3. Nettoyage au moment de quitter la page
+    return () => {
+      document.title = "Conceptify | Agence Digitale & IA au Maroc";
+      const defaultMeta = document.querySelector('meta[name="description"]');
+      if (defaultMeta) {
+        defaultMeta.setAttribute(
+          "content", 
+          "Chez CONCEPTIFY, nous propulsons les marques avec des solutions créatives et innovantes."
+        );
+      }
+    };
+  }, [service]);
+  // ------------------------------------------------
 
   if (!service) {
     return (

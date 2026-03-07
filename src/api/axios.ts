@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // Configuration de base d'Axios
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api', // L'URL de votre back-end Laravel
+    // On utilise l'IP directe (127.0.0.1) ou la variable d'environnement pour éviter les lenteurs
+    baseURL: (import.meta as any).env?.VITE_API_URL || 'http://127.0.0.1:8000/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

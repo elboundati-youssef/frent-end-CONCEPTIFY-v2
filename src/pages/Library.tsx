@@ -22,6 +22,33 @@ const Library = () => {
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // --- LOGIQUE SEO (SANS LIBRAIRIE EXTERNE) ---
+  useEffect(() => {
+    if (reference) {
+      const pageTitle = `${reference.title || "Projet"} | Portfolio Conceptify`;
+      const pageDesc = `Découvrez les réalisations de Conceptify pour ${reference.title || "ce client"}. Agence de communication et développement au Maroc.`;
+      
+      // 1. Changer le titre de l'onglet
+      document.title = pageTitle;
+      
+      // 2. Changer la description Google (meta description)
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute("content", pageDesc);
+      }
+    }
+    
+    // Remettre le titre par défaut quand on quitte la page
+    return () => {
+      document.title = "Conceptify | Agence Digitale & IA au Maroc";
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute("content", "Chez CONCEPTIFY, nous propulsons les marques avec des solutions créatives et innovantes.");
+      }
+    };
+  }, [reference]); // S'exécute dès que "reference" est chargé
+  // --------------------------------------------
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -33,7 +60,6 @@ const Library = () => {
         const allProjects = projRes.data?.data || projRes.data || [];
 
         if (allReferences.length > 0) {
-          // ✅ Données API disponibles
           const currentRef = allReferences.find((r: any) => String(r.id) === String(id));
           setReference(currentRef);
 
@@ -52,7 +78,6 @@ const Library = () => {
           setGalleryMedia(remainingMedia);
 
         } else {
-          // ✅ Fallback vers données statiques
           const staticProject = projectsData.find(p => String(p.id) === String(id));
 
           if (staticProject) {
@@ -75,7 +100,6 @@ const Library = () => {
         }
 
       } catch (error) {
-        // ✅ Fallback en cas d'erreur réseau
         const staticProject = projectsData.find(p => String(p.id) === String(id));
 
         if (staticProject) {
@@ -137,7 +161,6 @@ const Library = () => {
           transition={{ duration: 0.6 }}
           className="w-full"
         >
-          {/* CORRECTION 1 : Titre plus petit sur mobile (text-3xl) */}
           <h1 className="text-3xl md:text-7xl font-bold mb-4 md:mb-6 font-display tracking-tight text-white uppercase break-words">
             {reference.title || "Projet"}
           </h1>
@@ -192,7 +215,6 @@ const Library = () => {
       )}
 
       {/* GALERIE */}
-      {/* CORRECTION 2 : grid-cols-2 sur mobile, lg:grid-cols-3 sur PC, gap réduit sur mobile */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
         {galleryMedia.map((item: any, i: number) => {
           const isVideo = item.type === 'video' || (item.link && String(item.link).includes('.mp4'));

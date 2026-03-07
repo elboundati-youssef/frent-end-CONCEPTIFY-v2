@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-
+import ScrollLogo from "./ScrollLogo";
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,6 +35,7 @@ const Navbar = () => {
      { name: "Expertises", href: isHome ? "#expertises" : "/#expertises" },
     { name: "Portfolio", href: isHome ? "#portfolio" : "/#portfolio" },
     { name: "Qui sommes-nous", href: isHome ? "#about" : "/#about" },
+    { name: "Services", href: isHome ? "#domaines-expertise" : "/#domaines-expertise" },
     { name: "Contact", href: isHome ? "#contact" : "/#contact" },
   ];
 
@@ -76,18 +77,13 @@ const Navbar = () => {
         className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-300 ${scrolled ? "bg-bg/80 backdrop-blur-lg border-b border-white/5 py-4" : "bg-transparent py-6"}`}
       >
        <div className="container mx-auto px-6 flex justify-between items-center">
-          <Link
+         <Link
             to="/"
-            // J'ai enlevé les classes de texte (text-2xl, font-bold...) car c'est maintenant une image
             className="relative z-[70] flex items-center" 
             onClick={() => setMobileMenuOpen(false)}
           >
-            <img 
-              src="/img/Conceptify_logo-01.png" 
-              alt="Conceptify Logo" 
-              // h-8 ou h-10 gère la hauteur du logo pour qu'il s'intègre bien dans la barre de navigation
-              className="h-8 md:h-10 w-auto object-contain" 
-            />
+            {/* Le nouveau logo animé avec la particule orbitale */}
+            <ScrollLogo />
           </Link>
 
           {/* Desktop Menu */}

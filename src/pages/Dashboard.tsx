@@ -1,12 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { LayoutDashboard, PlusCircle, FolderPlus, Users, LogOut, Check, Trash2, Pencil, ArrowLeft, Image as ImageIcon, Briefcase, Upload, Folder, ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import api from "../api/axios";
-import MenuDashboard from "../components/MenuDashboard"; // <-- Importation de votre nouveau menu
+import MenuDashboard from "../components/MenuDashboard"; 
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Swal from 'sweetalert2';
+
 
 type Tab = "portfolio" | "reference" | "project" | "contacts";
 type ViewMode = "list" | "create" | "edit" | "import" | "folder"; 
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  background: 'rgba(15, 15, 15, 0.8)',
+  color: '#fff',
+  customClass: {
+    popup: 'border border-white/10 rounded-2xl backdrop-blur-xl',
+  }
+});
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -79,18 +96,35 @@ const Dashboard = () => {
     setViewMode("edit");
   };
 
-  const handleDelete = async (id: number, type: Tab | 'contacts') => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet élément ?")) {
+ const handleDelete = async (id: number, type: Tab | 'contacts') => {
+    const result = await Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: "Cette action est définitive !",
+      icon: 'warning',
+      showCancelButton: true,
+      background: 'rgba(10, 10, 10, 0.9)',
+      color: '#fff',
+      confirmButtonColor: '#ef4444', // Rouge pour supprimer
+      cancelButtonColor: '#374151', // Gris pour annuler
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      customClass: {
+        popup: 'border border-white/10 rounded-3xl backdrop-blur-2xl',
+      }
+    });
+
+    if (result.isConfirmed) {
       try {
         await api.delete(`/${type}/${id}`);
         fetchData();
+        Toast.fire({ icon: 'success', title: 'Supprimé avec succès' });
       } catch (error) {
-        alert("Erreur lors de la suppression");
+        Toast.fire({ icon: 'error', title: 'Erreur lors de la suppression' });
       }
     }
   };
 
-  const handleSave = async (e: React.FormEvent<HTMLFormElement>, type: Tab) => {
+ const handleSave = async (e: React.FormEvent<HTMLFormElement>, type: Tab) => {
     e.preventDefault();
     setIsUploading(true);
     const formData = new FormData(e.currentTarget);
@@ -105,27 +139,53 @@ const Dashboard = () => {
       
       fetchData();
       setViewMode(type === "project" && openFolderId === null ? "folder" : "list");
+      Toast.fire({ icon: 'success', title: 'Sauvegardé avec succès' });
     } catch (error: any) {
       const serverError = error.response?.data?.error || error.response?.data?.message || "Erreur serveur inconnue";
-      alert("Erreur : " + serverError);
+      // Grande alerte pour les erreurs de formulaire
+      Swal.fire({
+        title: 'Erreur de sauvegarde',
+        text: serverError,
+        icon: 'error',
+        background: 'rgba(10, 10, 10, 0.9)',
+        color: '#fff',
+        confirmButtonColor: '#0dcaf0',
+        customClass: { popup: 'border border-white/10 rounded-3xl backdrop-blur-2xl' }
+      });
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleImport = async (e: React.FormEvent<HTMLFormElement>, endpoint: string) => {
+const handleImport = async (e: React.FormEvent<HTMLFormElement>, endpoint: string) => {
     e.preventDefault();
     setIsUploading(true);
     const formData = new FormData(e.currentTarget);
     
     try {
       await api.post(endpoint, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-      alert("Importation réussie avec succès !");
       fetchData();
       setViewMode(activeTab === "project" ? "folder" : "list");
+      Swal.fire({
+        title: 'Importation Réussie !',
+        text: 'Toutes vos données ont été importées.',
+        icon: 'success',
+        background: 'rgba(10, 10, 10, 0.9)',
+        color: '#fff',
+        confirmButtonColor: '#0dcaf0',
+        customClass: { popup: 'border border-white/10 rounded-3xl backdrop-blur-2xl' }
+      });
     } catch (error: any) {
       const serverError = error.response?.data?.error || error.response?.data?.message || "Erreur inconnue";
-      alert("L'importation a échoué.\n" + serverError);
+      Swal.fire({
+        title: 'Échec de l\'importation',
+        text: serverError,
+        icon: 'error',
+        background: 'rgba(10, 10, 10, 0.9)',
+        color: '#fff',
+        confirmButtonColor: '#0dcaf0',
+        customClass: { popup: 'border border-white/10 rounded-3xl backdrop-blur-2xl' }
+      });
     } finally {
       setIsUploading(false);
     }
@@ -143,16 +203,13 @@ const Dashboard = () => {
     }
   };
 
-  if (!hasToken) {
+ if (!hasToken) {
+    // On affiche juste la Navbar et le Footer, sans rien au milieu, exactement comme un faux lien !
     return (
-      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white px-4">
-        <h1 className="text-8xl md:text-[150px] font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8E2A8B] to-[#0dcaf0] mb-4">404</h1>
-        <h2 className="text-2xl md:text-4xl font-semibold mb-6 text-center">Page introuvable</h2>
-        <p className="text-gray-400 mb-10 max-w-md text-center">La page que vous recherchez n'existe pas ou a été déplacée.</p>
-        <Link to="/" className="px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#0dcaf0]/50 rounded-xl transition-all font-medium flex items-center gap-2">
-          <ArrowLeft size={18} /> Retour à l'accueil
-        </Link>
-      </div>
+      <>
+        <Navbar />
+        <Footer />
+      </>
     );
   }
 
@@ -190,7 +247,7 @@ const Dashboard = () => {
         </header>
 
         {/* MAIN ZONE DÉFILABLE (C'est ici que le scroll fonctionne parfaitement) */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-10 relative bg-[#050505] scroll-smooth">
+        <main className="flex-1 overflow-y-auto p-4 md:p-10 relative bg-[#050505] scroll-smooth" data-lenis-prevent="true">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#6f42c1]/10 rounded-full blur-[120px] pointer-events-none" />
 
           <div className="max-w-6xl mx-auto relative z-10 pb-20 md:pb-10">

@@ -4,7 +4,6 @@ import api from "../api/axios";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 const ContactForm = () => {
-  // On retire le statut "success" puisqu'on va recharger la page
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   
@@ -60,8 +59,6 @@ const ContactForm = () => {
     }
   };
 
-  // On a supprimé le bloc if (status === "success") { ... }
-
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       {status === "error" && (
@@ -77,7 +74,7 @@ const ContactForm = () => {
           type="text"
           required
           disabled={status === "loading"}
-          className="w-full bg-surface border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#6f42c1] transition-colors disabled:opacity-50"
+          className="w-full bg-surface border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4DA8C8] transition-colors disabled:opacity-50"
           placeholder="John Doe"
         />
       </div>
@@ -89,7 +86,7 @@ const ContactForm = () => {
           type="email"
           required
           disabled={status === "loading"}
-          className="w-full bg-surface border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#6f42c1] transition-colors disabled:opacity-50"
+          className="w-full bg-surface border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4DA8C8] transition-colors disabled:opacity-50"
           placeholder="john@example.com"
         />
       </div>
@@ -101,19 +98,24 @@ const ContactForm = () => {
           rows={4}
           required
           disabled={status === "loading"}
-          className="w-full bg-surface border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#6f42c1] transition-colors resize-none disabled:opacity-50"
+          className="w-full bg-surface border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4DA8C8] transition-colors resize-none disabled:opacity-50"
           placeholder="Parlez-nous de votre projet..."
         />
       </div>
 
-      <div className="flex justify-center">
-        <HCaptcha
-          sitekey="9fc0f82e-09d0-4a6a-8914-34cc7d282800"
-          onVerify={(token) => setCaptchaToken(token)}
-          onExpire={() => setCaptchaToken("")}
-          ref={captchaRef}
-          theme="dark" 
-        />
+      {/* --- CORRECTION POUR LE MOBILE ICI --- */}
+      <div className="flex justify-center w-full overflow-hidden">
+        {/* scale-[0.85] réduit la taille à 85% sur mobile pour éviter le débordement */}
+        {/* sm:scale-100 remet la taille normale (100%) sur tablette et PC */}
+        <div className="transform scale-[0.85] sm:scale-100 origin-center">
+          <HCaptcha
+            sitekey="9fc0f82e-09d0-4a6a-8914-34cc7d282800"
+            onVerify={(token) => setCaptchaToken(token)}
+            onExpire={() => setCaptchaToken("")}
+            ref={captchaRef}
+            theme="dark" 
+          />
+        </div>
       </div>
 
       <button

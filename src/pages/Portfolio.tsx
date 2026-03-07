@@ -14,6 +14,33 @@ const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState("Tous");
   const [isLoading, setIsLoading] = useState(true);
 
+  // --- LOGIQUE SEO POUR LA PAGE PORTFOLIO ---
+  useEffect(() => {
+    // 1. Définir le titre et la description pour le Portfolio
+    document.title = "Notre Portfolio | Conceptify Agence Digitale";
+    
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute(
+        "content", 
+        "Découvrez les réalisations de Conceptify. Création de sites web, applications mobiles, identité visuelle et projets d'Intelligence Artificielle au Maroc."
+      );
+    }
+    
+    // 2. Nettoyage : Remettre le SEO par défaut quand on quitte la page
+    return () => {
+      document.title = "Conceptify | Agence Digitale & IA au Maroc";
+      const defaultMeta = document.querySelector('meta[name="description"]');
+      if (defaultMeta) {
+        defaultMeta.setAttribute(
+          "content", 
+          "Chez CONCEPTIFY, nous propulsons les marques avec des solutions créatives et innovantes."
+        );
+      }
+    };
+  }, []);
+  // ------------------------------------------
+
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
