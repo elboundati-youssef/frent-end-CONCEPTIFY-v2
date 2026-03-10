@@ -331,6 +331,9 @@ const DomainesExpertise = () => {
 const Expertise = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // 1. Initialiser le hook de navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchExpertise = async () => {
@@ -390,16 +393,21 @@ const Expertise = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 auto-rows-[200px] md:auto-rows-[300px]">
-            {/* L'ERREUR ÉTAIT ICI : Les commentaires JSX sont maintenant corrigés et retirés du code cassant */}
             {categories.map((cat, idx) => (
               <ScrollReveal key={cat.id || idx} delay={idx * 0.15} className={cat.className}>
-                <BentoCard
-                  title={cat.title}
-                  image={cat.image}
-                  desc={cat.desc}
-                  className="h-full w-full"
-                  index={idx}
-                />
+                {/* 2. On rend la div cliquable, MAIS on laisse la BentoCard gérer le hover */}
+                <div 
+                  onClick={() => navigate('/portfolio', { state: { filter: cat.title.toUpperCase() } })}
+                  className="cursor-pointer h-full w-full"
+                >
+                  <BentoCard
+                    title={cat.title}
+                    image={cat.image}
+                    desc={cat.desc}
+                    className="h-full w-full" 
+                    index={idx}
+                  />
+                </div>
               </ScrollReveal>
             ))}
             {categories.length === 0 && (
@@ -521,7 +529,7 @@ const Home = () => {
         
         if (element) {
           const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-          const offset = window.innerWidth > 768 ? 150 : 100;
+          const offset = window.innerWidth > 768 ? 0 : 100;
           
           window.scrollTo({
             top: elementPosition - offset,

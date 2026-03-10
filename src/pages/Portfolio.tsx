@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence } from "motion/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import PageTransition from "../components/PageTransition";
 import Magnetic from "../components/Magnetic";
@@ -9,14 +9,22 @@ import api from "../api/axios";
 import { projectsData, secteursData } from "../data";
 
 const Portfolio = () => {
+  const location = useLocation(); 
+  const initialFilter = location.state?.filter || "Tous";
+
   const [references, setReferences] = useState<any[]>([]);
   const [portfolios, setPortfolios] = useState<any[]>([]);
-  const [activeFilter, setActiveFilter] = useState("Tous");
+  const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [isLoading, setIsLoading] = useState(true);
+
+  
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [location.pathname]);
+  // -----------------------------------------------------------
 
   // --- LOGIQUE SEO POUR LA PAGE PORTFOLIO ---
   useEffect(() => {
-    // 1. Définir le titre et la description pour le Portfolio
     document.title = "Notre Portfolio | Conceptify Agence Digitale";
     
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -27,7 +35,6 @@ const Portfolio = () => {
       );
     }
     
-    // 2. Nettoyage : Remettre le SEO par défaut quand on quitte la page
     return () => {
       document.title = "Conceptify | Agence Digitale & IA au Maroc";
       const defaultMeta = document.querySelector('meta[name="description"]');
@@ -54,10 +61,8 @@ const Portfolio = () => {
         const portData = portRes.data?.data || portRes.data || [];
 
         if (refData.length > 0) {
-          // ✅ Données API disponibles
           setReferences(refData);
         } else {
-          // ✅ Fallback références statiques
           setReferences(projectsData.map(p => ({
             id: p.id,
             title: p.client,
@@ -71,15 +76,12 @@ const Portfolio = () => {
         }
 
         if (portData.length > 0) {
-          // ✅ Données API disponibles
           setPortfolios(portData);
         } else {
-          // ✅ Fallback portfolios statiques
           setPortfolios(secteursData.map(s => ({ id: s.id, title: s.title })));
         }
 
       } catch (error) {
-        // ✅ Fallback global en cas d'erreur réseau
         setReferences(projectsData.map(p => ({
           id: p.id,
           title: p.client,
