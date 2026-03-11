@@ -3,7 +3,7 @@ import axios from 'axios';
 // Configuration de base d'Axios
 const api = axios.create({
     // On utilise l'IP directe (127.0.0.1) ou la variable d'environnement pour éviter les lenteurs
-    baseURL: (import.meta as any).env?.VITE_API_URL || 'http://127.0.0.1:8000/api',
+    baseURL: (import.meta as any).env?.VITE_API_URL || 'https://conceptify.pro/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

@@ -46,7 +46,7 @@ Configuration des variables d'environnement
 Créez un fichier .env à la racine et configurez l'URL de votre backend :
 
 مقتطف الرمز
-VITE_API_URL=http://localhost:8000/api
+VITE_API_URL=https://conceptify.pro/api
 Lancer l'application en mode développement
 
 Bash

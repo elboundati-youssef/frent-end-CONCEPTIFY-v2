@@ -353,7 +353,7 @@ const getImageUrl = (path: string | null | undefined) => {
   if (!path || path === "null" || path === "") return null;
   if (path.startsWith('http')) return path;
   const cleanPath = path.replace(/\\/g, '/').replace(/^\/+/, '');
-  return `http://localhost:8000/api/private-image/${cleanPath}`;
+  return `https://conceptify.pro/api/private-image/${cleanPath}`;
 };
 
 const Pagination = ({ total, itemsPerPage, currentPage, setCurrentPage }: any) => {

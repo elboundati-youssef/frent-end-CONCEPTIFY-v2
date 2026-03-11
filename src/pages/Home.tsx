@@ -22,7 +22,7 @@ const MarqueeLogos = lazy(() => import("../components/MarqueeLogos"));
 const getImageUrl = (path: string | null | undefined) => {
   if (!path) return "";
   if (path.startsWith("http")) return path;
-  return `http://localhost:8000/api/private-image/${path}`;
+  return `https://conceptify.pro/api/private-image/${path}`;
 };
 
 const Hero = () => {

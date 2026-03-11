@@ -9,7 +9,7 @@ const getImageUrl = (path: string | null | undefined) => {
   // Si c'est déjà une URL complète (ex: http://localhost... ou https://unsplash...), on la retourne telle quelle
   if (path.startsWith("http") || path.startsWith("data:")) return path;
   // Sinon on ajoute la route de l'API Laravel
-  return `http://localhost:8000/api/private-image/${path}`;
+  return `https://conceptify.pro/api/private-image/${path}`;
 };
 
 // On utilise "any" pour le type afin d'accepter facilement les données de Laravel
