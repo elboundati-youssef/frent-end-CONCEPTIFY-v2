@@ -10,6 +10,7 @@ import { ReactLenis } from "lenis/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CustomCursor from "./components/CustomCursor";
+import Register from "./pages/Register";
 
 // --- LAZY LOADING DES PAGES ---
 // Ces composants ne se téléchargeront que lorsque l'utilisateur cliquera sur le lien
@@ -82,6 +83,7 @@ const AnimatedRoutes = () => {
             <Route path="/reference/:id" element={<Library />} />
             <Route path="/service/:id" element={<ServiceDetail />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register-secret-admin" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </Suspense>
