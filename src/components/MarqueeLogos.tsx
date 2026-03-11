@@ -42,13 +42,13 @@ const MarqueeLogos = () => {
     const logoUrl = getImageUrl(item.logo);
 
     return (
-      // CORRECTION : Ajout de "shrink-0" pour empêcher le navigateur mobile d'écraser la div
       <div className="shrink-0 flex items-center justify-center px-6 py-6 md:px-16 md:py-12 border-r border-gray-800 min-w-[130px] md:min-w-[250px] opacity-60 hover:opacity-100 transition-all duration-300 group">
         {logoUrl ? (
           <img 
             src={logoUrl} 
             alt={item.title || "Logo Client"} 
-            className="max-h-10 md:max-h-20 max-w-[100px] md:max-w-[160px] w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500"
+            /* CORRECTION ICI : Retrait du filtre grayscale pour garder les couleurs originales */
+            className="max-h-10 md:max-h-20 max-w-[100px] md:max-w-[160px] w-auto object-contain transition-all duration-500"
             loading="lazy"
           />
         ) : (
@@ -75,7 +75,6 @@ const MarqueeLogos = () => {
     <section className="py-16 md:py-32 bg-black relative z-10 overflow-hidden">
       <div className="relative flex overflow-hidden w-full border-y border-gray-800">
         <motion.div
-          // CORRECTION : Ajout de "w-max" pour forcer la largeur maximale (au-delà de l'écran)
           className="flex whitespace-nowrap w-max"
           animate={{ x: ["0%", "-50%"] }}
           transition={{ repeat: Infinity, ease: "linear", duration: animationDuration }}

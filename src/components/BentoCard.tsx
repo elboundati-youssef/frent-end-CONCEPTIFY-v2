@@ -1,4 +1,3 @@
-// --- FICHIER: src/components/BentoCard.tsx ---
 import React from "react";
 import { motion } from "motion/react";
 
@@ -47,8 +46,8 @@ const BentoCard = ({
         
         <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-500 ease-out">
           <div className="overflow-hidden">
-            {/* Description : text-xs sur mobile, text-base sur PC */}
-            <p className="text-gray-300 text-xs md:text-base leading-snug md:leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out delay-100 mt-1 md:mt-0">
+            {/* 🚀 CORRECTION ICI : Ajout de line-clamp-3 (mobile) et md:line-clamp-4 (PC) */}
+            <p className="text-gray-300 text-xs md:text-base leading-snug md:leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out delay-100 mt-1 md:mt-0 line-clamp-3 md:line-clamp-4">
               {desc}
             </p>
           </div>

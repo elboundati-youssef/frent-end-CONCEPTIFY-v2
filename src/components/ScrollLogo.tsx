@@ -24,28 +24,23 @@ const ScrollLogo = () => {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        // Tailles pour MOBILE
         setOrbitSize({ rX: 28, rY: 26 }); 
       } else {
-        // Tailles pour DESKTOP
         setOrbitSize({ rX: 34, rY: 32 }); 
       }
     };
 
-    handleResize(); // Vérifier au chargement
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const rX = orbitSize.rX; 
   const rY = orbitSize.rY;
-  // ------------------------------------------------------
 
   // --- POSITION DE DÉPART DU POINT ---
-  // 0 = Droite, 90 = Bas, 180 = Gauche, 270 = Haut
   const startPosition = 65; 
 
-  // Calculs avec la nouvelle position de départ
   const angle = useTransform(smoothScroll, (v) => (v * speed + startPosition) * (Math.PI / 180));
   const dotX = useTransform(angle, (a) => Math.cos(a) * rX);
   const dotY = useTransform(angle, (a) => Math.sin(a) * rY);
@@ -62,14 +57,11 @@ const ScrollLogo = () => {
   const t3X = useTransform(angleT3, (a) => Math.cos(a) * rX);
   const t3Y = useTransform(angleT3, (a) => Math.sin(a) * rY);
 
-  // Rotation for the dynamic light inside the SVG
   const lightRotation = useTransform(smoothScroll, (v) => v * speed + 90);
 
   return (
     <div className="relative flex items-center justify-center w-14 h-14 md:w-16 md:h-16 group mr-4">
-      {/* Conteneur global légèrement plus grand pour laisser la place à l'orbite (w-14 / w-16) */}
       
-      {/* Le 'C' SVG - (w-10 / w-12) */}
       <svg 
         viewBox="0 0 100 100" 
         className="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_2px_10px_rgba(77,168,200,0.2)] transition-transform duration-700 group-hover:scale-105"
@@ -97,10 +89,19 @@ const ScrollLogo = () => {
         </mask>
         
         <g mask="url(#c-mask)">
+          {/* Base en bleu sarcelle (teal) */}
           <rect x="0" y="0" width="100" height="100" fill="url(#matte-teal)" />
-          <polygon points="40,-10 110,-10 110,45" fill="url(#matte-purple)" />
-          <polygon points="-10,55 -10,110 45,110" fill="url(#matte-purple)" />
-          <polygon points="65,65 110,65 110,110" fill="url(#matte-purple)" />
+          
+          {/* 🚀 CORRECTION ICI : Les polygones violets ont été réajustés pour correspondre à l'image */}
+          
+          {/* 1. Coupe du dessus (top right) - Ligne diagonale ajustée */}
+          <polygon points="30,-10 110,-10 110,60" fill="url(#matte-purple)" />
+          
+          {/* 2. Coupe en bas à gauche (bottom left) - Angle affiné */}
+          <polygon points="-10,35 -10,110 65,110" fill="url(#matte-purple)" />
+          
+          {/* 3. Pointe en bas à droite (bottom right tip) */}
+          <polygon points="60,60 110,60 110,110" fill="url(#matte-purple)" />
 
           <motion.rect 
             x="0" y="0" width="100" height="100" 
@@ -121,27 +122,22 @@ const ScrollLogo = () => {
       
       {/* Orbit Container */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        
         <motion.div 
           className="absolute w-1 h-1 rounded-full bg-[#4DA8C8] opacity-30 blur-[0.5px]"
           style={{ x: t3X, y: t3Y }}
         />
-
         <motion.div 
           className="absolute w-1.5 h-1.5 rounded-full bg-[#4DA8C8] opacity-50"
           style={{ x: t2X, y: t2Y }}
         />
-
         <motion.div 
           className="absolute w-2 h-2 rounded-full bg-[#4DA8C8] opacity-80"
           style={{ x: t1X, y: t1Y }}
         />
-
         <motion.div 
           className="absolute w-2.5 h-2.5 rounded-full bg-[#4DA8C8] shadow-[0_0_8px_rgba(77,168,200,0.9)]"
           style={{ x: dotX, y: dotY }}
         />
-        
       </div>
     </div>
   );
